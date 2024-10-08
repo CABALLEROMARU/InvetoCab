@@ -1,6 +1,7 @@
 
 package inventocab.Forms;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
 import inventocab.Models.ItemsInfoModel;
 import inventocab.Models.others.ItemImageModel;
@@ -89,6 +90,7 @@ public void processItemData() {
     public addItemspop() {
         initComponents();
         DatePicker();
+        
         String Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         String randonID = generateRandomID(Alphabet, 6);
         idLbl.setText(randonID);
@@ -104,6 +106,7 @@ public void processItemData() {
 
     
     }
+     
 private static String generateRandomID(String candidateChar,int length){
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -201,6 +204,11 @@ private static String generateRandomID(String candidateChar,int length){
         jButton1.setText("Delete");
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -313,6 +321,10 @@ private ItemImageModel itemImageModel;
             itemImageModel = new ItemImageModel(file);
         }
     }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+//      itemImage.setImage(new FlatSVGIcon("inventocab/icons/8.png",3f));
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

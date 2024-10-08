@@ -6,7 +6,8 @@ import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import inventocab.Components.Menu;
 import inventocab.Event.Event;
-import inventocab.Forms.Inventory;
+import inventocab.Forms.BorrowLogs;
+
 import inventocab.Forms.Form_3;
 import inventocab.Forms.Item_Form;
 import inventocab.Forms.PopItemForm;
@@ -30,6 +31,7 @@ public class Main extends javax.swing.JFrame {
  private PopItemForm form;
  private Item_Form item_Form;
  private Form_3 form3;
+ private BorrowLogs borrowlogs;
    
     public Main() throws SQLException {
         initComponents();
@@ -39,6 +41,7 @@ public class Main extends javax.swing.JFrame {
       /*  test = new test1();*/
          form3 = new Form_3();
          item_Form = new Item_Form();
+         borrowlogs = new BorrowLogs();
      
       menu2.addEvent(new Event (){
             @Override
@@ -52,8 +55,11 @@ public class Main extends javax.swing.JFrame {
                 }else if (index == 1){
                     setForm(item_Form);
                 }else if (index == 2){
+                    setForm(borrowlogs);
+                }   else if (index == 3){
                     setForm(form3);
-                }else if (index == 3){
+                }
+                else if (index == 4){
                     int response = JOptionPane.showConfirmDialog(
         null, 
         "Are you sure you want to Log Out?", 
@@ -72,7 +78,7 @@ public class Main extends javax.swing.JFrame {
                         
                     }
                 
-                }else if (index == 4){
+                }else if (index == 5){
                     
                     int response = JOptionPane.showConfirmDialog(
         null, 

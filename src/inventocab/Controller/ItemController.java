@@ -12,16 +12,20 @@ import inventocab.JDBC.DatabaseConnection;
 import inventocab.Model.Model_Menu;
 import inventocab.Models.ItemsInfoModel;
 import inventocab.Models.others.ItemImageModel;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import static java.nio.file.Files.list;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.util.ArrayList;
+import static java.util.Collections.list;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -191,7 +195,103 @@ public List<ItemsInfoModel> getAll()throws SQLException {
             return null;
         }
     }
+     public void deleteItem(String itemId) {
+    try {
+        // Create the SQL DELETE statement
+        String sql = "DELETE FROM additem WHERE Item_ID=?";
+        
+        // Prepare the statement
+        ps = prepareStatement(sql);
+        
+        // Set the condition for which item to delete using the item ID
+        ps.setString(1, itemId);
 
+        // Execute the delete
+        int rowsAffected = ps.executeUpdate();
+        
+        if (rowsAffected > 0) {
+            System.out.println("Item with ID " + itemId + " has been deleted successfully.");
+        } else {
+            System.out.println("No item found with ID " + itemId);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        // Close the PreparedStatement and any other resources if necessary
+        if (ps != null) {
+            try {
+                ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+   public List<ItemsInfoModel> searchItems(String search) throws SQLException {
+    List<ItemsInfoModel> itemsList = new ArrayList<>();
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    try {
+        // SQL query to search items by ItemName, Category, or ItemLocation including Blob image
+        String sql = "SELECT Item_ID, ItemName, Category, ItemLocation, Quantity, Description, DateRequested, DateReceive, ItemImage FROM additem WHERE (ItemName LIKE ? OR Category LIKE ? OR ItemLocation LIKE ?) AND DateDeleted IS NULL";
+        
+        // Prepare the SQL statement
+        ps = getConnection().prepareStatement(sql);
+        String searchPattern = "%" + search + "%";
+        ps.setString(1, searchPattern);  // Search by ItemName
+        ps.setString(2, searchPattern);  // Search by Category
+        ps.setString(3, searchPattern);  // Search by ItemLocation
+
+        // Execute the query
+        rs = ps.executeQuery();
+        
+        // Iterate through the result set
+        while (rs.next()) {
+            // Create a new ItemsInfoModel object and populate it with data from the database
+            ItemsInfoModel item = new ItemsInfoModel();
+            item.setItemID(rs.getString("Item_ID"));
+            item.setItemName(rs.getString("ItemName"));
+            item.setCategory(rs.getString("Category"));
+            item.setItemLocation(rs.getString("ItemLocation"));
+            item.setQuantity(rs.getInt("Quantity"));
+            item.setDescription(rs.getString("Description"));
+            item.setDateRequest(rs.getDate("DateRequested"));
+            item.setDateReceive(rs.getDate("DateReceive"));
+
+           Blob blob = (Blob)rs.getBlob("ItemImage");
+              ImageIcon icon = null;
+            if (blob != null) {
+                byte[] imageBytes = blob.getBytes(1, (int) blob.length());
+                icon = new ImageIcon(imageBytes);
+            }else{
+                icon = new ImageIcon(getClass().getResource("/inventocab/Icons/defaultImage.png"));
+            }
+            ItemImageModel imageModel = new ItemImageModel();
+            imageModel.setIcon(icon);
+            item.setImage(imageModel);
+            
+            item.setDescription(rs.getString("Description"));
+            
+            // Add the item to the list
+            itemsList.add(item);
+        }
+        return itemsList;
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        // Close the ResultSet and PreparedStatement
+        if (rs != null) {
+            rs.close();
+        }
+        if (ps != null) {
+            ps.close();
+        }
+    }
+
+    return itemsList;  // Return the list of items
+}
     private PreparedStatement prepareStatement(String sql) {
         try {
             Connection con = getConnection();

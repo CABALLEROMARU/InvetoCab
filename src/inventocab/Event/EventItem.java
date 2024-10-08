@@ -12,5 +12,5 @@ import java.awt.Component;
  * @author Calyle
  */
 public interface EventItem {
-    public void itemClick(Component com,ItemsInfoModel item);
+    public void itemClick(Component com, ItemsInfoModel item);
 }

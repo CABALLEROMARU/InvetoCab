@@ -17,6 +17,7 @@ public class ResposiveItem extends JPanel{
     public ResposiveItem() {
         ResponsiveLayout layout = new ResponsiveLayout(ResponsiveLayout.JustifyContent.FIT_CONTENT, new Dimension(-1,-1));
         layout.setColumn(1);
+       
         
         
         setLayout(layout);

@@ -1,11 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package inventocab.Items;
 
 import com.formdev.flatlaf.ui.FlatListCellBorder.Selected;
 import inventocab.Models.ItemsInfoModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -42,12 +40,12 @@ public class ItemsBorrow extends javax.swing.JPanel {
         
         
         String qty = Integer.toString(data.getQuantity());
-       jLabel5.setText(data.getItemID());
+       itemsId.setText(data.getItemID());
         
-        jLabel6.setText(data.getItemName());
-        jLabel7.setText(qty);
+        itemsName.setText(data.getItemName());
+        quantity.setText(qty);
        
-        jLabel8.setText(data.getCategory());
+        category.setText(data.getCategory());
     }
 
    private boolean selected;
@@ -56,7 +54,99 @@ public class ItemsBorrow extends javax.swing.JPanel {
  
     public ItemsBorrow() {
         initComponents();
+        
+         jButton1.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            increaseQuantity();
+        }
+    });
+    
+    // ActionListener for decreasing the quantity
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            decreaseQuantity();
+        }
+    });
+    
+    // ActionListener for manually inputting the quantity
+    jTextField10.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            updateQuantityFromTextField();
+        }
+    });
+}
+
+// Method to increase the quantity
+private void increaseQuantity() {
+    int currentQuantity = getCurrentQuantityFromTextField(); // Get validated quantity from text field
+    currentQuantity++; // Increase the quantity
+    updateQuantityFields(currentQuantity); // Update all fields
+}
+
+// Method to decrease the quantity
+private void decreaseQuantity() {
+    int currentQuantity = getCurrentQuantityFromTextField(); // Get validated quantity from text field
+    if (currentQuantity > 1) {
+        currentQuantity--; // Decrease the quantity
     }
+    updateQuantityFields(currentQuantity); // Update all fields
+}
+
+// Method to update quantity from the text field (manual input)
+private void updateQuantityFromTextField() {
+    int inputQuantity = getCurrentQuantityFromTextField(); // Get validated quantity from text field
+    if (inputQuantity > 0) {
+        updateQuantityFields(inputQuantity); // Update if input is valid (greater than 0)
+    } else {
+        jTextField10.setText("1"); // Set to 1 if invalid
+    }
+}
+
+// Method to get the current quantity from the text field with validation
+private int getCurrentQuantityFromTextField() {
+    String text = jTextField10.getText().trim(); // Get the text and trim any whitespace
+    
+    // Check if the text field is empty or contains invalid data
+    if (text.isEmpty()) {
+        return 1; // Default to 1 if empty
+    }
+    
+    try {
+        // Try to parse the text as an integer
+        return Integer.parseInt(text);
+    } catch (NumberFormatException e) {
+        // If the input is invalid, default to 1
+        jTextField10.setText("1");
+        return 1;
+    }
+}
+
+// Method to update all quantity-related fields and the data model
+private void updateQuantityFields(int quantityValue) {
+
+  try {
+        int inputQuantity = Integer.parseInt(jTextField10.getText()); // Get the quantity from the text field
+        
+        // Check if input exceeds available quantity
+        if (inputQuantity == data.getQuantity()) {
+            // Notify the user or handle invalid input
+            jTextField10.setText(String.valueOf(data.getQuantity())); // Reset to maximum available quantity
+            JOptionPane.showMessageDialog(this, "Invalid quantity. Maximum available: " + data.getQuantity(), "Error", JOptionPane.ERROR_MESSAGE);
+            return; // Exit the method early to avoid further processing
+        } 
+        
+        // Validate input to be positive
+        if (inputQuantity <= 0) {
+            jTextField10.setText("1"); // Set to 1 if invalid
+        } else {
+            data.setQuantity(quantityValue);
+            updateQuantityFields(inputQuantity); // Update if input is valid
+        }
+        
+    } catch (NumberFormatException e) {
+        jTextField10.setText("1");
+    }
+}
 
    private int qnty = 1;
   
@@ -72,10 +162,10 @@ public class ItemsBorrow extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        itemsId = new javax.swing.JLabel();
+        itemsName = new javax.swing.JLabel();
+        quantity = new javax.swing.JLabel();
+        category = new javax.swing.JLabel();
         jTextField10 = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(255, 255, 255));
@@ -98,13 +188,13 @@ public class ItemsBorrow extends javax.swing.JPanel {
 
         jLabel4.setText("Quantity:");
 
-        jLabel5.setText("jLabel5");
+        itemsId.setText("jLabel5");
 
-        jLabel6.setText("jLabel6");
+        itemsName.setText("jLabel6");
 
-        jLabel7.setText("jLabel7");
+        quantity.setText("jLabel7");
 
-        jLabel8.setText("jLabel8");
+        category.setText("jLabel8");
 
         jTextField10.setEditable(false);
         jTextField10.setOpaque(true);
@@ -122,38 +212,38 @@ public class ItemsBorrow extends javax.swing.JPanel {
                     .addComponent(jLabel3))
                 .addGap(23, 23, 23)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel7))
-                .addGap(0, 154, Short.MAX_VALUE))
+                    .addComponent(category)
+                    .addComponent(itemsName)
+                    .addComponent(itemsId)
+                    .addComponent(quantity))
+                .addGap(0, 128, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton2)
-                .addGap(0, 0, 0)
+                .addGap(1, 1, 1)
                 .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
+                .addGap(1, 1, 1)
                 .addComponent(jButton1)
-                .addContainerGap())
+                .addGap(5, 5, 5))
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
+                    .addComponent(itemsId)
                     .addComponent(jLabel1))
                 .addGap(10, 10, 10)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
+                    .addComponent(itemsName)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
+                    .addComponent(quantity)
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8)
+                    .addComponent(category)
                     .addComponent(jLabel3))
                 .addGap(1, 1, 1)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -177,18 +267,18 @@ public class ItemsBorrow extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel category;
+    private javax.swing.JLabel itemsId;
+    private javax.swing.JLabel itemsName;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JTextField jTextField10;
     private javax.swing.JPanel panel;
+    private javax.swing.JLabel quantity;
     private inventocab.Swing.ResposiveItem2 resposiveItem21;
     // End of variables declaration//GEN-END:variables
 }

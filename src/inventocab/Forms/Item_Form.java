@@ -5,6 +5,7 @@
 package inventocab.Forms;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import inventocab.Components.Header;
 import inventocab.Controller.ItemController;
 import inventocab.Event.EventItem;
 import inventocab.Items.ItemPack;
@@ -13,14 +14,19 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import raven.modal.ModalDialog;
 import raven.modal.Toast;
 import raven.modal.component.SimpleModalBorder;
+import raven.modal.demo.simple.SimpleMessageModal;
+import raven.modal.listener.ModalCallback;
+import raven.modal.listener.ModalController;
 import raven.modal.option.Location;
 import raven.modal.option.Option;
 
@@ -102,10 +108,13 @@ public class Item_Form extends javax.swing.JPanel {
 
         panel = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        header1 = new inventocab.Components.Header();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         resposiveItem1 = new inventocab.Swing.ResposiveItem();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        searchText1 = new inventocab.Swing.SearchText();
 
         jButton1.setText("ADD ITEMS");
         jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -115,12 +124,48 @@ public class Item_Form extends javax.swing.JPanel {
             }
         });
 
-        header1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Item Id");
 
         jScrollPane1.setViewportView(resposiveItem1);
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/inventocab/icons/search.png"))); // NOI18N
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/inventocab/icons/menu.png"))); // NOI18N
+        jLabel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        searchText1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        searchText1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        searchText1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchText1KeyReleased(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(searchText1, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)
+                .addGap(12, 12, 12)
+                .addComponent(jLabel3)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(searchText1, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
@@ -132,8 +177,8 @@ public class Item_Form extends javax.swing.JPanel {
                     .addGroup(panelLayout.createSequentialGroup()
                         .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                                .addComponent(header1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 320, Short.MAX_VALUE)
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 322, Short.MAX_VALUE)
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane1))
                         .addGap(5, 5, 5))
@@ -146,12 +191,12 @@ public class Item_Form extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(9, 9, 9)
+                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(header1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -174,43 +219,83 @@ public class Item_Form extends javax.swing.JPanel {
        addItems();
        
     }//GEN-LAST:event_jButton1ActionPerformed
-private void updateItems(ItemsInfoModel data) {
+
+    private void searchText1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchText1KeyReleased
+        try {
+            SearchEvent(searchText1.getText());
+        } catch (ParseException ex) {
+            Logger.getLogger(Item_Form.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Item_Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_searchText1KeyReleased
+
     
-    addItemspop popup = new addItemspop();  
-    popup.setData(data);
-    ItemController control = new ItemController();
+    private void updateItems(ItemsInfoModel data) {
+    
+    addItemspop popup = new addItemspop();
+    popup.setData(data); 
+    ItemController control = new ItemController(); 
+
     Option option = ModalDialog.createOption();
-    option.getLayoutOption().setSize(-1,1f)
-            .setLocation(Location.RIGHT, Location.CENTER)
-            .setAnimateDistance(0.7f, 0);
-    
+    option.getLayoutOption()
+          .setSize(-1, 1f)
+          .setLocation(Location.RIGHT, Location.CENTER)
+          .setAnimateDistance(0.7f, 0);
+
+  
     SimpleModalBorder.Option[] options = new SimpleModalBorder.Option[]{
-         new SimpleModalBorder.Option("Delete",SimpleModalBorder.CANCEL_OPTION),
-       
-         new SimpleModalBorder.Option("Update",SimpleModalBorder.OK_OPTION),  // Changed label to 'Update'
+        new SimpleModalBorder.Option("Delete", SimpleModalBorder.CANCEL_OPTION),
+        new SimpleModalBorder.Option("Update", SimpleModalBorder.OK_OPTION) 
     };
 
-    // Fetch existing item data based on itemId and populate the popup
-    ModalDialog.showModal(this, new SimpleModalBorder(popup, "Update Item", options,
+    
+    ModalDialog.showModal(this, new SimpleModalBorder(popup, "Update Item", options, 
         (controller, action) -> {
-            if (action == SimpleModalBorder.YES_OPTION) {
-                // Perform update operation
-                control.updateItem( popup.getData()); 
-                Toast.show(this, Toast.Type.SUCCESS, "Item Successfully Updated");
+            if (action == SimpleModalBorder.OK_OPTION) { 
+                // Update action
+                control.updateItem(popup.getData()); 
+                Toast.show(this, Toast.Type.SUCCESS, "Item Successfully Updated"); 
+
+              
                 try {
-                    populateData();  // Refresh data after update
+                    populateData();
                 } catch (SQLException ex) {
                     Logger.getLogger(Item_Form.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else {
-                controller.close();
+                controller.close(); 
+            } else if (action == SimpleModalBorder.CANCEL_OPTION) { 
+          
+                ModalDialog.showModal(this, new SimpleMessageModal(
+                    SimpleMessageModal.Type.WARNING,
+                    "Are you sure you want to delete this item?",
+                    "Delete Item", SimpleModalBorder.YES_NO_OPTION,
+                    new ModalCallback() {
+                        @Override
+                        public void action(ModalController mc, int i) {
+                            if (i == SimpleModalBorder.YES_OPTION) {
+                              
+                                control.deleteItem(data.getItemID()); 
+                                JOptionPane.showMessageDialog(null, "Successfully Deleted");
+                                
+                             
+                                try {
+                                    populateData();
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Item_Form.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                mc.close(); 
+                            } else {
+                                mc.close(); 
+                            }
+                        }
+                    }
+                ), option);
+                controller.close(); 
             }
         }
     ), option);
 }
-    
-    
-    
     
     
     
@@ -230,7 +315,7 @@ private void updateItems(ItemsInfoModel data) {
     (controller,action)->{
         if (action==SimpleModalBorder.YES_OPTION) {
            
-             control.updateItem(popup.getData());
+             control.addItem(popup.getData());
             Toast.show(this,Toast.Type.SUCCESS,"Items Successfully Added");
             try {
                 populateData();
@@ -244,7 +329,33 @@ private void updateItems(ItemsInfoModel data) {
     }
     ),option);
 }
-  
+  private void SearchEvent(String search) throws ParseException, SQLException {
+    this.setEvent(new EventItem() {
+        @Override
+        public void itemClick(Component com, ItemsInfoModel itemsInfoModel) {
+            updateItems(itemsInfoModel);
+            // You don't need to instantiate ItemController here again
+        }
+    });
+
+    // Clear the current UI items
+     resposiveItem1.removeAll();
+
+    // Fetch search results from the controller
+    ItemController controller = new ItemController();
+    List<ItemsInfoModel> itemsInfoModels = (List<ItemsInfoModel>) controller.searchItems(search); // Assumes searchItem returns a list
+
+    // Populate the UI with search results
+    for (ItemsInfoModel item : itemsInfoModels) {
+        AddItems(item); 
+        // Corrected 'event' to 'item'
+    }
+
+    // Refresh the UI
+    
+    repaint();
+    revalidate();
+}
 private void populateData() throws SQLException{
     this.setEvent(new EventItem() {
         @Override
@@ -264,15 +375,41 @@ private void populateData() throws SQLException{
     revalidate();
     
 }
- 
+//   private void SearchEvent(String search) throws ParseException, SQLException{
+//            this.setEvent(new EventItem() {
+//                @Override
+//                public void itemClick(Component com, ItemsInfoModel itemsInfoModel) {
+//                    updateItems(itemsInfoModel);
+//                    ItemController pop = new ItemController();
+//                    
+//                    
+//                } 
+//            });
+//          responsiveItem1.removeAll();
+//            ItemController controller = new ItemController();
+//          
+//            List<ItemsInfoModel> itemsInfoModels = controller.searchItem(search);
+//    
+//    
+//              for (ItemsInfoModel item : eventsList) {
+//                  addItems(event);
+//                 
+//                }
+//               repaint();
+//                  revalidate();
+//            
+//        }
         
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private inventocab.Components.Header header1;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panel;
     private inventocab.Swing.ResposiveItem resposiveItem1;
+    private inventocab.Swing.SearchText searchText1;
     // End of variables declaration//GEN-END:variables
 }

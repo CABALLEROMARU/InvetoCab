@@ -3,9 +3,24 @@ package inventocab.Models;
 
 import inventocab.Models.others.ItemImageModel;
 import java.util.Date;
+import javax.swing.ImageIcon;
 
 
 public class ItemsInfoModel {
+
+    /**
+     * @return the icon
+     */
+    public ImageIcon getIcon() {
+        return icon;
+    }
+
+    /**
+     * @param icon the icon to set
+     */
+    public void setIcon(ImageIcon icon) {
+        this.icon = icon;
+    }
 
     /**
      * @return the cartQuantity
@@ -145,6 +160,7 @@ public class ItemsInfoModel {
    private String description;
    private Date dateRequest;
    private Date dateReceive;
+   private ImageIcon icon;
   
    
    private int cartQuantity;

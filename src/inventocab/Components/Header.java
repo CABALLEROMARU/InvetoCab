@@ -1,19 +1,27 @@
 
 package inventocab.Components;
 
+import inventocab.Forms.Item_Form;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Header extends javax.swing.JPanel {
 
-    
-    public Header() {
+     
+    public Header()   {
         initComponents();
         setOpaque(false);
+     
+                
+       
     }
-
+  
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -31,6 +39,11 @@ public class Header extends javax.swing.JPanel {
         jLabel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         searchText1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        searchText1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchText1KeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -55,6 +68,10 @@ public class Header extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void searchText1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchText1KeyReleased
+    
+    }//GEN-LAST:event_searchText1KeyReleased
 
 
     
