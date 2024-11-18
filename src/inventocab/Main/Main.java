@@ -33,9 +33,10 @@ public class Main extends javax.swing.JFrame {
  private Form_3 form3;
  private BorrowLogs borrowlogs;
    
-    public Main() throws SQLException {
+    public Main() throws SQLException, Exception {
         initComponents();
 //         setSize(Toolkit.getDefaultToolkit().getScreenSize());
+
       
        form = new PopItemForm();
       /*  test = new test1();*/
@@ -53,8 +54,24 @@ public class Main extends javax.swing.JFrame {
                         Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }else if (index == 1){
+                   if (item_Form != null) {
+                try {
+                    item_Form.populateAddData(); // Assuming this method refreshes the data
+                } catch (SQLException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
                     setForm(item_Form);
                 }else if (index == 2){
+                     if (borrowlogs != null) {
+                try {
+                    borrowlogs.populateAddDataLogs(form, item_Form);// Assuming this method refreshes the data
+                } catch (SQLException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }        catch (Exception ex) {
+                             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                         }
+            }
                     setForm(borrowlogs);
                 }   else if (index == 3){
                     setForm(form3);
@@ -195,6 +212,8 @@ private void showFrame(JFrame frame) {
                 try {
                     new Main().setVisible(true);
                 } catch (SQLException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

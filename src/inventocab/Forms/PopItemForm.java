@@ -5,23 +5,36 @@
 package inventocab.Forms;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import inventocab.Controller.BorrowerController;
 import inventocab.Controller.ItemController;
 import inventocab.Event.EventItem;
+import inventocab.Items.ItemLogsPop;
 import inventocab.Items.ItemPack;
 import inventocab.Items.ItemPackInventory;
 import inventocab.Items.ItemsBorrow;
+import inventocab.Models.BorrowerInfoModel;
 import inventocab.Models.ItemsInfoModel;
+import inventocab.Models.others.ItemImageModel;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import raven.datetime.component.date.DatePicker;
 import raven.modal.ModalDialog;
 import raven.modal.Toast;
 import raven.modal.component.SimpleModalBorder;
@@ -34,57 +47,348 @@ import raven.modal.option.Option;
 
 
 public class PopItemForm extends javax.swing.JPanel {
-
+  private javax.swing.JTextField itemsId; // Declare text fields
+    private javax.swing.JTextField itemsName; // Item name text field
+    private javax.swing.JTextField jTextField10; // Quantity text field
+     private ItemsBorrow borrowInstance;
+    private Item_Form itemForm; 
+    
     private List<ItemsInfoModel>cartList = new ArrayList<>();
-    public EventItem getEvent() {
-        return event;
+
+    
+      ItemsBorrow borrow = new ItemsBorrow();
+      
+   private EventItem cartEvent;
+   private EventItem event;
+    public PopItemForm(ItemsBorrow borrowInstance,Item_Form itemForm) {
+    this.borrowInstance = borrowInstance;
+     this.itemForm = itemForm;
+}
+public BorrowerInfoModel getData() {
+    try {
+        Date dateRequestedData = dateRequested.isDateSelected() ? Date.valueOf(dateRequested.getSelectedDate()) : null;
+
+        // Debugging: Log the values of the inputs
+        String borrowerId = BorId.getText();
+        String borrowerNameText = borrowerName.getText();
+        String lenderNameText = lenderername.getText();
+        String allItemsID = allitemsID.getText();// Ensure this is the correct JTextField reference
+
+        System.out.println("Borrower ID: " + borrowerId);
+        System.out.println("Borrower Name: " + borrowerNameText);
+        System.out.println("Lender Name: " + lenderNameText); // Log the lender name
+
+        // Check for empty values
+        if (borrowerId.isEmpty() || borrowerNameText.isEmpty() || lenderNameText.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "All fields must be filled out.", "Error", JOptionPane.ERROR_MESSAGE);
+            return null; // Return null if any field is empty
+        }
+
+        // Make sure cartList is initialized and not null
+        if (cartList == null || cartList.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Cart list cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            return null; // Return null if cartList is invalid
+        }
+
+        // Return a new BorrowerInfoModel
+        return new BorrowerInfoModel(borrowerId, borrowerNameText, lenderNameText, cartList, dateRequestedData,allItemsID);
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "An error occurred while retrieving data.", "Error", JOptionPane.ERROR_MESSAGE);
+        return null;
     }
+}
+
 
     public void setEvent(EventItem event) {
         this.event = event;
     }
+     public EventItem getCartEvent() {
+        return cartEvent;
+    }
+
+    public void setCartEvent(EventItem cartEvent) {
+        this.cartEvent = cartEvent;
+    }
 
      private ItemController items = new ItemController();
-     private EventItem event;
+    
+       private DatePicker dateRequested = new DatePicker();
     public PopItemForm() throws SQLException {
         initComponents();
         init();
         populateData();
+          String Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        String randomID = generateRandomID(Alphabet, 6);
+        BorId.setText(randomID);
+        allitemsID.setText(randomID);
+        
         datePicker1.setCloseAfterSelected(true);
-        datePicker1.setEditor(jFormattedTextField1);
-       
+        datePicker1.setEditor(dateBor);
+        
+          dateRequested.setEditor(dateBor);
+    
+    dateRequested.setCloseAfterSelected(true);
+    
+   
+    dateRequested.setDateFormat("yyyy-MM-dd");
+    dateRequested.now();
+    
+
     }
- public void addBorrow(ItemsInfoModel data) throws SQLException{
-         ItemsBorrow itemsborrow = new ItemsBorrow();
-       itemsborrow.setData(data);
-        itemsborrow.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                 if (SwingUtilities.isLeftMouseButton(e)) {
-//                   event.itemClick(itemsborrow, data);
+   private static String generateRandomID(String candidateChar,int length){
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            sb.append(candidateChar.charAt(random.nextInt(candidateChar.length())));
+            
+        }
+        return sb.toString();
+        
+    }
+  
+   
+   public void updateQuantity(ItemsInfoModel item, int newQuantity) {
+    System.out.println("updateQuantity called with item ID: " + item.getItemID() + " and new quantity: " + newQuantity);
+    for (Component com : resposiveItem21.getComponents()) {
+        ItemPackInventory i = (ItemPackInventory) com;
+        if (i.getData().getItemID().equals(item.getItemID())) {
+            if (newQuantity <= i.getData().getQuantity()) {
+                i.getData().setQuantity(newQuantity);
+                i.setQuantity(newQuantity);
+                // Update the quantity field in the ItemsBorrow component
+                for (Component borrowCom : resposiveItem2.getComponents()) {
+                    ItemsBorrow borrow = (ItemsBorrow) borrowCom;
+                    if (borrow.getData().getItemID().equals(item.getItemID())) {
+                        System.out.println("Found ItemsBorrow component for item ID: " + item.getItemID());
+                        borrow.updateQuantityField(newQuantity);
+                    } else {
+                        // Update the quantity of the existing items
+                        borrow.updateQuantityField(borrow.getData().getQuantity());
+                    }
+                }
+            } else {
+                // Do nothing if the new quantity exceeds the available quantity
+            }
+        }
+    }
+    repaint();
+    revalidate();
+}
+   
+   public void addCartData(ItemsInfoModel data) {
+    ItemsBorrow cartItem = new ItemsBorrow();
+    cartItem.setData(data);
+    
+    // Check if the item is already in the cart
+    int cartIndex = cartList.indexOf(data);
+    
+    if (cartIndex == -1) {
+        // If the item is not in the cart, set its quantity to 1
+        data.setCartQuantity(1); // Set the quantity to 1
+        cartList.add(data); // Add the item to the cart list
+    } else {
+        // If the item is already in the cart, you can choose to update the quantity
+        // For example, you might want to increase the quantity instead of resetting it
+//        int newQty = cartList.get(cartIndex).getCartQuantity() + 1; // Increase quantity
+//        data.setCartQuantity(newQty);
+        cartList.set(cartIndex, data); // Update the cart list
+    }
+
+    // Set the quantity in the cart item UI
+    cartItem.setQtyData(data.getCartQuantity());
+
+    // Add mouse listeners for the cart item
+    cartItem.getRemovebtn().addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int cartIndexdata = cartList.indexOf(data);
+            if (cartIndexdata != -1) {
+                cartList.remove(cartIndexdata);
+                resposiveItem2.remove(cartItem);
+                repaint();
+                revalidate();
+            }
+        }
+    });
+
+    cartItem.getAddbtn().addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (cartIndex != -1) {
+                int newQty = data.getCartQuantity() + 1; // Increase quantity
+                data.setCartQuantity(newQty);
+                cartItem.setQtyData(newQty);
+                cartList.set(cartIndex, data);
+            }
+        }
+    });
+
+    cartItem.getMinusbtn().addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (cartIndex != -1) {
+                if (data.getCartQuantity() > 1) {
+                    int newQty = data.getCartQuantity() - 1; // Decrease quantity
+                    data.setCartQuantity(newQty);
+                    cartItem.setQtyData(newQty);
+                    cartList.set(cartIndex, data);
                 }
             }
+        }
+    });
 
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                super.mouseEntered(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    cartItem.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
+              
+                cartEvent.itemClick(cartItem, data);
             }
+        }
+    });
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                super.mouseExited(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    resposiveItem2.add(cartItem);
+    repaint();
+    revalidate();
+}
+//  
+//   public void addCartData(ItemsInfoModel data){
+//       
+//      
+//        ItemsBorrow cartItem = new ItemsBorrow();
+//        cartItem.setData(data);
+//        int cartIndex = cartList.indexOf(data);
+//         
+//        ItemsInfoModel datamodel = cartList.get(cartIndex);
+//       
+//        cartItem.getRemovebtn().addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//               int cartIndexdata = cartList.indexOf(data);
+//                if (cartIndexdata != -1) {
+//                    cartList.remove(cartIndexdata);
+//                    resposiveItem2.remove(cartItem);
+//                      
+//                    repaint();
+//                    revalidate();
+//                }
+//            }
+//        
+//        
+//        });
+//        
+//        cartItem.getAddbtn().addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                if (cartIndex != -1) {
+//                   
+//                      int newQty = datamodel.getCartQuantity()+ 1;
+//                      datamodel.setCartQuantity(newQty);
+//                      cartItem.setQtyData(newQty);
+//                      cartList.set(cartIndex, datamodel);
+//                }    
+//            }
+//        });
+//            cartItem.getMinusbtn().addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                if (cartIndex != -1) {
+//                    if (datamodel.getCartQuantity()>1) {
+//                      int newQty = datamodel.getCartQuantity()- 1;
+//                      datamodel.setCartQuantity(newQty);
+//                      cartItem.setQtyData(newQty);
+//                      cartList.set(cartIndex, datamodel);  
+//                    }     
+//                }           
+//            }
+//        });
+//        
+//        cartItem.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                if (SwingUtilities.isLeftMouseButton(e)) {
+//                    cartEvent.itemClick(cartItem, data);
+//                }
+//            }  
+//            
+//        });
+//        resposiveItem2.add(cartItem);
+//        repaint();
+//        revalidate();
+//    }
+   
+public void addBorrow(ItemsInfoModel data) throws SQLException {
+   
+
+    ItemsBorrow itemsborrow = new ItemsBorrow();
+    itemsborrow.setData(data);
+    itemsborrow.setPopItemForm(this);
+    itemsborrow.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                if (!cartList.contains(data)) {
+    event.itemClick(itemsborrow, data);
+    itemsborrow.setEnabled(false);
+} else {
+    // You can show a message to the user that the item has already been added
+    JOptionPane.showMessageDialog(null, "Item has already been added to the cart");
+}        
+            }else if (cartList.stream().anyMatch(item -> item.getItemID().equals(data.getItemID()))){
+                JOptionPane.showMessageDialog(itemsborrow, "Item is already added in the list", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+                
             }
-        
-        
-        });
-       resposiveItem2.add(itemsborrow);
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            super.mouseEntered(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            super.mouseExited(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+        }
+    }); 
+
+    
+    if (!Arrays.stream(resposiveItem2.getComponents())
+            .anyMatch(com -> ((ItemsBorrow) com).getData().getItemID().equals(data.getItemID()))) {
+        resposiveItem2.add(itemsborrow);
+    }
+
+    // Update the quantity of the existing items
+    for (Component com : resposiveItem2.getComponents()) {
+        ItemsBorrow borrow = (ItemsBorrow) com;
+        if (!borrow.getData().getItemID().equals(data.getItemID())) {
+            // Update the quantity of the existing item
+            borrow.updateQuantityField(borrow.getData().getQuantity());
+        }
+    }
+    
+    repaint();
+    revalidate();
+}
+
+
+  public void refreshItemUI(String itemId) {
+        for (Component com : resposiveItem21.getComponents()) {
+            ItemPackInventory itemPackInventory = (ItemPackInventory) com;
+            if (itemPackInventory.getData().getItemID().equals(itemId)) {
+                // Assuming ItemPackInventory has a method to update the displayed quantity
+                itemPackInventory.setQuantity(itemPackInventory.getData().getQuantity());
+                break; // Exit the loop once the item is found and updated
+            }
+        }
         repaint();
         revalidate();
-        
     }
     public void AddItems(ItemsInfoModel data){
         ItemPackInventory itemPackInventory = new ItemPackInventory();
         itemPackInventory.setData(data);
+         
         itemPackInventory.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -128,7 +432,14 @@ public class PopItemForm extends javax.swing.JPanel {
         
       
     }
+    public void removeItem(ItemsBorrow item) {
+   
+    resposiveItem2.remove(item);
     
+    // Update the UI
+    revalidate();
+    repaint();
+}
 
    
     @SuppressWarnings("unchecked")
@@ -144,21 +455,21 @@ public class PopItemForm extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         panelGradient1 = new inventocab.Swing.panelGradient();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        borrowBut = new javax.swing.JButton();
+        cancel = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        BorId = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        borrowerName = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jFormattedTextField1 = new javax.swing.JFormattedTextField();
+        lenderername = new javax.swing.JTextField();
+        dateBor = new javax.swing.JFormattedTextField();
         jLabel8 = new javax.swing.JLabel();
+        allitemsID = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         resposiveItem2 = new inventocab.Swing.ResposiveItem();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         search = new inventocab.Swing.SearchText();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -177,30 +488,38 @@ public class PopItemForm extends javax.swing.JPanel {
         panelGradient1.add(jLabel2);
         jLabel2.setBounds(20, 10, 150, 70);
 
-        jButton1.setBackground(new java.awt.Color(110, 168, 246));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Borrow");
+        borrowBut.setBackground(new java.awt.Color(110, 168, 246));
+        borrowBut.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        borrowBut.setForeground(new java.awt.Color(255, 255, 255));
+        borrowBut.setText("Borrow");
+        borrowBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                borrowButActionPerformed(evt);
+            }
+        });
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        jButton2.setText("Cancel");
+        cancel.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        cancel.setText("Cancel");
+        cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelActionPerformed(evt);
+            }
+        });
 
-        jLabel3.setText("jLabel1");
+        BorId.setText("jLabel1");
 
-        jLabel4.setText("Borrowers Name:");
+        jLabel4.setText("Borrower's Name:");
 
-        jLabel5.setText("Lenders Name:");
+        jLabel5.setText("Lenderer's Name:");
 
         jLabel8.setText("Date Borrow:");
+
+        allitemsID.setText("jLabel3");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -209,10 +528,17 @@ public class PopItemForm extends javax.swing.JPanel {
                     .addComponent(jLabel8))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
-                    .addComponent(jFormattedTextField1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lenderername, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+                    .addComponent(borrowerName, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+                    .addComponent(dateBor))
+                .addContainerGap(16, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(allitemsID)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(BorId, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -220,18 +546,19 @@ public class PopItemForm extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(borrowerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lenderername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dateBor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                .addComponent(BorId, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addComponent(allitemsID))
         );
 
         jScrollPane2.setViewportView(resposiveItem2);
@@ -246,9 +573,9 @@ public class PopItemForm extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(114, 114, 114)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                        .addComponent(cancel, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
+                        .addComponent(borrowBut, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -262,19 +589,16 @@ public class PopItemForm extends javax.swing.JPanel {
                 .addComponent(jScrollPane2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1)))
+                    .addComponent(cancel)
+                    .addComponent(borrowBut)))
         );
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/inventocab/icons/search.png"))); // NOI18N
 
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/inventocab/icons/menu.png"))); // NOI18N
-        jLabel7.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
         search.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        search.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        search.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         search.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 searchKeyReleased(evt);
@@ -290,14 +614,11 @@ public class PopItemForm extends javax.swing.JPanel {
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(search, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(12, 12, 12)
-                .addComponent(jLabel7)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(search, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
@@ -328,7 +649,7 @@ public class PopItemForm extends javax.swing.JPanel {
                 .addGap(2, 2, 2)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
                 .addContainerGap())
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -344,7 +665,10 @@ public class PopItemForm extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -358,7 +682,99 @@ public class PopItemForm extends javax.swing.JPanel {
             Logger.getLogger(PopItemForm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_searchKeyReleased
-private void addItems(){
+ private List<BorrowerInfoModel> borrowedData = new ArrayList<>();
+    private void borrowButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrowButActionPerformed
+ BorrowerController control = new BorrowerController(this,itemForm);
+    Item_Form itemform = null;
+      try {
+          itemform = new Item_Form();
+      } catch (SQLException ex) {
+          Logger.getLogger(PopItemForm.class.getName()).log(Level.SEVERE, null, ex);
+      }
+ 
+ 
+try {
+    // Get data for the borrower
+    BorrowerInfoModel borrowerInfo = getData(); // Retrieve data using getData method
+
+    // Check if the data is valid (not null)
+    if (borrowerInfo != null && !borrowerInfo.getCartList().isEmpty()) {
+        // Convert the cartList (List<ItemsInfoModel>) to a List<BorrowerInfoModel>
+        List<BorrowerInfoModel> borrowerList = new ArrayList<>();
+        for (ItemsInfoModel item : borrowerInfo.getCartList()) {
+            // Create a new BorrowerInfoModel for each item
+            BorrowerInfoModel newBorrower = new BorrowerInfoModel(
+                borrowerInfo.getBorrowerId(),
+                borrowerInfo.getBorrowerName(),
+                borrowerInfo.getLenderName(),
+                List.of(item), 
+                borrowerInfo.getDateRequest(),
+                    borrowerInfo.getAllItemsID()
+                    
+            );
+            borrowerList.add(newBorrower);
+            
+        }
+           
+       control.addBorrow(borrowerList);
+       
+      BorrowLogs borrowLogs = new BorrowLogs();
+            borrowLogs.populateAddDataLogs(this, itemform);
+            ItemLogsPop itemLogsPop = new ItemLogsPop();
+           
+        if (itemForm != null) {
+                // Assuming you want to refresh based on the cartList
+                itemForm.refreshItemQuantities(borrowerInfo.getCartList());
+            }
+      
+        itemform.populateAddData();
+        populateData();
+        
+       
+      
+        // Show success message
+        JOptionPane.showMessageDialog(null, "Borrow data has been added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        
+        
+        
+         String Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        String newRandomID = generateRandomID(Alphabet, 6);
+        BorId.setText(newRandomID);
+        allitemsID.setText(newRandomID);
+        
+         borrowerName.setText(""); // Clear borrowerName field
+        lenderername.setText("");   
+        
+        cartList.clear();
+        
+            populateCart(); // Refresh the cart UI
+    } else {
+        // Show an error message if the data is invalid
+        JOptionPane.showMessageDialog(null, "Failed to add borrow data. Please check the input.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+} catch (Exception e) {
+    e.printStackTrace();
+    // Display an error message if an exception occurs
+    JOptionPane.showMessageDialog(null, "An error occurred while adding borrow data.", "Error", JOptionPane.ERROR_MESSAGE);
+}
+
+    }//GEN-LAST:event_borrowButActionPerformed
+
+    private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
+      cartList.clear();
+       cartList.removeAll(cartList);
+      try {
+          populateCart();
+      } catch (SQLException ex) {
+          Logger.getLogger(PopItemForm.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }//GEN-LAST:event_cancelActionPerformed
+
+// 
+
+    
+ 
+    private void addItems(){
     
     addItemspop popup = new addItemspop();
     ItemController control = new ItemController();
@@ -502,11 +918,18 @@ private void addItems(){
     repaint();
     revalidate();
 }
-private void populateData() throws SQLException{
+ void populateData() throws SQLException{
     this.setEvent(new EventItem() {
         @Override
         public void itemClick(Component com, ItemsInfoModel item) {
-            
+              if (item.getQuantity() == 0) {
+                    JOptionPane.showMessageDialog(null, "Item is out of stock", "Out of Stock", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+             if (cartList.contains(item)) {
+                JOptionPane.showMessageDialog(null, "Item is already in Cart");
+                return;
+            }
              int response = JOptionPane.showConfirmDialog(
         null, 
              "Are you sure you want to add?", 
@@ -518,7 +941,8 @@ private void populateData() throws SQLException{
              }
              System.out.println("Current cartList:");
        for (ItemsInfoModel cartItem : cartList) {
-        System.out.println("Item Name: " + cartItem.getCategory() + ", Item ID: " + cartItem.getDescription());
+         
+        System.out.println("Item Name: " + cartItem.getItemName() + ", Item ID: " + cartItem.getItemID());
     }
             try {
                 populateCart();
@@ -543,8 +967,8 @@ private void populateCart() throws SQLException{
     resposiveItem2.removeAll();
     
     for (ItemsInfoModel itemsInfoModel : cartList) {
-       addBorrow(itemsInfoModel);
-        
+//       addBorrow(itemsInfoModel);
+        addCartData(itemsInfoModel);
     }
     repaint();
     revalidate();
@@ -554,25 +978,25 @@ private void populateCart() throws SQLException{
         
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel BorId;
+    private javax.swing.JLabel allitemsID;
+    private javax.swing.JButton borrowBut;
+    private javax.swing.JTextField borrowerName;
+    private javax.swing.JButton cancel;
+    private javax.swing.JFormattedTextField dateBor;
     private raven.datetime.component.date.DatePicker datePicker1;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JFormattedTextField jFormattedTextField1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField lenderername;
     private javax.swing.JPanel panel;
     private inventocab.Swing.panelGradient panelGradient1;
     private inventocab.Swing.ResposiveItem resposiveItem1;
@@ -580,4 +1004,6 @@ private void populateCart() throws SQLException{
     private inventocab.Swing.ResposiveItem2 resposiveItem21;
     private inventocab.Swing.SearchText search;
     // End of variables declaration//GEN-END:variables
+
+   
 }

@@ -133,7 +133,7 @@ public class ItemsInfoModel {
         this.description = description;
     }
 
-    public ItemsInfoModel(String itemID, String itemName, String category, String itemLocation, int quantity, ItemImageModel image, String description, Date dateRequest, Date dateReceive) {
+    public ItemsInfoModel(String itemID, String itemName, String category, String itemLocation, int quantity, ItemImageModel image, String descriptiom, Date dateRequest, Date dateReceive) {
         this.itemID = itemID;
         this.itemName = itemName;
         this.category = category;
@@ -151,6 +151,8 @@ public class ItemsInfoModel {
     public ItemsInfoModel() {
         
     }
+
+     
     private String itemID;
     private String itemName;
     private String category;
@@ -165,16 +167,16 @@ public class ItemsInfoModel {
    
    private int cartQuantity;
 
- public Object[] toTableRow(int rowNum) {
-        
-        
-        return new Object[]{false, rowNum, this ,itemID, category,itemLocation,quantity,image};
-    }
-
-    @Override
-    public String toString() {
-        return itemName;
-    }
+// public Object[] toTableRow(int rowNum) {
+//        
+//        
+//        return new Object[]{false, rowNum, this ,itemID, category,itemLocation,quantity,image};
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return itemName;
+//    }
 
 }
 

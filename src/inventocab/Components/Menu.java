@@ -7,7 +7,11 @@ package inventocab.Components;
 import inventocab.Event.Event;
 import inventocab.Main.Main;
 import inventocab.Model.Model_Menu;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -15,11 +19,15 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+
 
 
 public class Menu extends javax.swing.JPanel {
-
+  
   private Event event;
   
  public  void addEvent(Event event){
@@ -28,25 +36,33 @@ public class Menu extends javax.swing.JPanel {
   }
            
     public Menu() {
+        
         initComponents();
         setOpaque(false);
         listMenu1.setOpaque(false);
         init();
-        
+       
     }
+ 
+     
     private void init(){
-          listMenu1.addItem(new Model_Menu("1", "Inventory", Model_Menu.MenuType.MENU));
+        //
+       
+        listMenu1.addItem(new Model_Menu("1", "Inventory", Model_Menu.MenuType.MENU));
         listMenu1.addItem(new Model_Menu("2", "Add Items", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("3", "Logs", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("4", "History", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("3", "Pendings", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("4", "Records", Model_Menu.MenuType.MENU));
           
         
         
         
         listMenu1.addItem(new Model_Menu("5", "Log Out", Model_Menu.MenuType.MENU));
-             listMenu1.addItem(new Model_Menu("6", "Exit", Model_Menu.MenuType.MENU));
-       
+        listMenu1.addItem(new Model_Menu("6", "Exit", Model_Menu.MenuType.MENU));
+      
+       Font boldFont = new Font("Segoe UI", Font.BOLD, 18); // You can adjust the size as needed
+    listMenu1.setFont(boldFont); 
     }
+    
 
     
     @SuppressWarnings("unchecked")

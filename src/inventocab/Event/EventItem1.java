@@ -5,16 +5,17 @@
 package inventocab.Event;
 
 import inventocab.Items.ItemsBorrow;
+import inventocab.Models.BorrowerInfoModel;
 import inventocab.Models.ItemsInfoModel;
+import inventocab.Models.ReturnInfoModel;
 import java.awt.Component;
 
 /**
  *
  * @author Calyle
  */
-public interface EventItem {
-    public void itemClick(Component com, ItemsInfoModel item);
-   
+public interface EventItem1 {
+    public void itemClick(Component com, BorrowerInfoModel data);
 
     
 }

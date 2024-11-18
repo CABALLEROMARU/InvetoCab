@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import raven.modal.ModalDialog;
 import raven.modal.Toast;
 import raven.modal.component.SimpleModalBorder;
@@ -22,9 +23,9 @@ import raven.modal.option.Option;
 
 public class ItemPackInventory extends javax.swing.JPanel {
 
-    /**
-     * @return the Selected
-     */
+    public void setQuantity(int quantity) {
+        this.quantity.setText(String.valueOf(quantity));
+    }
     public boolean isSelected() {
         return Selected;
     }
@@ -36,34 +37,61 @@ public class ItemPackInventory extends javax.swing.JPanel {
         this.Selected = Selected;
         repaint();
     }
-
+ 
   
     public ItemsInfoModel getData() {
         return data;
     }
 
+//    public void setData(ItemsInfoModel data) {
+//        this.data = data;
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        String dateReqStr = dateFormat.format(data.getDateRequest());
+//         String dateRecStr = dateFormat.format(data.getDateReceive());
+//        String qty = Integer.toString(data.getQuantity());
+//        itemID.setText(data.getItemID());
+//        itemLoc.setText(data.getItemLocation());
+//        itemName.setText(data.getItemName());
+//        quantity.setText(qty);
+//        itemLoc.setText(data.getItemLocation());
+//        category.setText(data.getCategory());
+//        dateReq.setText(dateRecStr);
+//        dateRec.setText(dateRecStr);
+//       if (data.getImage() != null && data.getImage().getIcon() != null) {
+//        itemImg.setImage(data.getImage().getIcon());
+//    } else {
+//        // Handle the case where image is null, e.g., set a default image
+//        itemImg.setImage(new ImageIcon(getClass().getResource("/inventocab/Icons/defaultImage.png")));
+//    }
+//       
+//    }
     public void setData(ItemsInfoModel data) {
-        this.data = data;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String dateReqStr = dateFormat.format(data.getDateRequest());
-         String dateRecStr = dateFormat.format(data.getDateReceive());
-        String qty = Integer.toString(data.getQuantity());
-        itemID.setText(data.getItemID());
-        itemLoc.setText(data.getItemLocation());
-        itemName.setText(data.getItemName());
-        itemqty.setText(qty);
-        itemLoc.setText(data.getItemLocation());
-        category.setText(data.getCategory());
-        dateReq.setText(dateRecStr);
-        dateRec.setText(dateRecStr);
-       if (data.getImage() != null && data.getImage().getIcon() != null) {
+    this.data = data;
+
+    // Initialize the date format
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    // Check if the dateRequest is null and format accordingly
+    String dateReqStr = (data.getDateRequest() != null) ? dateFormat.format(data.getDateRequest()) : "N/A"; // Default value for null
+    String dateRecStr = (data.getDateReceive() != null) ? dateFormat.format(data.getDateReceive()) : "N/A"; // Default value for null
+
+    // Set the text fields
+    itemID.setText(data.getItemID());
+    itemLoc.setText(data.getItemLocation());
+    itemName.setText(data.getItemName());
+    quantity.setText(String.valueOf(data.getQuantity()));
+    category.setText(data.getCategory());
+    dateReq.setText(dateReqStr);
+    dateRec.setText(dateRecStr);
+
+    // Handle the image
+    if (data.getImage() != null && data.getImage().getIcon() != null) {
         itemImg.setImage(data.getImage().getIcon());
     } else {
-        // Handle the case where image is null, e.g., set a default image
+        // Set a default image if the image is null
         itemImg.setImage(new ImageIcon(getClass().getResource("/inventocab/Icons/defaultImage.png")));
     }
-       
-    }
+}
     
     public ItemPackInventory() {
         initComponents();
@@ -79,7 +107,7 @@ public class ItemPackInventory extends javax.swing.JPanel {
         category = new javax.swing.JLabel();
         itemName = new javax.swing.JLabel();
         itemLoc = new javax.swing.JLabel();
-        itemqty = new javax.swing.JLabel();
+        quantity = new javax.swing.JLabel();
         dateReq = new javax.swing.JLabel();
         dateRec = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -90,6 +118,7 @@ public class ItemPackInventory extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
 
+        setBorder(javax.swing.BorderFactory.createEtchedBorder());
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 formMouseClicked(evt);
@@ -108,8 +137,8 @@ public class ItemPackInventory extends javax.swing.JPanel {
         itemLoc.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         itemLoc.setText("jLabel1");
 
-        itemqty.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        itemqty.setText("jLabel1");
+        quantity.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        quantity.setText("jLabel1");
 
         dateReq.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         dateReq.setText("jLabel1");
@@ -137,62 +166,76 @@ public class ItemPackInventory extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(itemImg, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(itemImg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7))
-                        .addGap(18, 18, 18)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel1)
+                                        .addComponent(jLabel5)
+                                        .addComponent(jLabel6)
+                                        .addComponent(jLabel7))
+                                    .addGap(26, 26, 26))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jLabel4)
+                                    .addGap(18, 18, 18)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(59, 59, 59)
+                                        .addComponent(itemID, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(26, 26, 26)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(dateRec, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(dateReq, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(itemqty, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(itemLoc, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(category, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(itemID, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(itemName, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(dateRec, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(dateReq, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(quantity, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(itemName, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(itemLoc, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(5, 9, Short.MAX_VALUE))
+                            .addComponent(category, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(itemImg, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                .addComponent(itemImg, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(itemName)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(itemID)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel3)
+                    .addComponent(category))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(category)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel4)
+                    .addComponent(itemLoc))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(itemLoc)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel5)
+                    .addComponent(quantity))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(itemqty)
-                    .addComponent(jLabel5))
+                    .addComponent(jLabel6)
+                    .addComponent(dateReq))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateReq)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel7)
+                    .addComponent(dateRec))
+                .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateRec)
-                    .addComponent(jLabel7))
-                .addGap(36, 36, 36))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(itemID, javax.swing.GroupLayout.PREFERRED_SIZE, 1, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -209,7 +252,6 @@ public class ItemPackInventory extends javax.swing.JPanel {
     private inventocab.Swing.PictureBox itemImg;
     private javax.swing.JLabel itemLoc;
     private javax.swing.JLabel itemName;
-    private javax.swing.JLabel itemqty;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -217,5 +259,6 @@ public class ItemPackInventory extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel quantity;
     // End of variables declaration//GEN-END:variables
 }

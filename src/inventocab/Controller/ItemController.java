@@ -34,9 +34,12 @@ import net.coobird.thumbnailator.Thumbnails;
 
 
 
+
 public class ItemController {
 private PreparedStatement ps;
 private ResultSet rs;
+
+   private List<ItemsInfoModel> items = new ArrayList<>();
 
 
 public List<ItemsInfoModel> getAll()throws SQLException {
@@ -89,6 +92,12 @@ public List<ItemsInfoModel> getAll()throws SQLException {
         }
     } 
 }
+ public List<ItemsInfoModel> getItems() {
+        return this.items;
+    }
+  public void updateItems(List<ItemsInfoModel> newItems) {
+        this.items = newItems;
+    }
   private byte[] getByteImages(File file) throws IOException {
         BufferedImage image = Thumbnails.of(file)
                 .width(500)
@@ -111,39 +120,52 @@ public List<ItemsInfoModel> getAll()throws SQLException {
         
     }
     
-    
-    public void addItem(ItemsInfoModel data){
-        try {
-            String sql = "Insert Into additem (Item_ID,ItemName,Category,ItemLocation,Quantity,ItemImage,Description,DateRequested,DateReceive)VALUES(?,?,?,?,?,?,?,?,?)";
-            
-            
-            ps = prepareStatement(sql);
-            ps.setString(1,data.getItemID() );
-            ps.setString(2,data.getItemName() );
-            ps.setString(3,data.getCategory() );
-            ps.setString(4,data.getItemLocation() );
-            ps.setInt(5,data.getQuantity() );
-            if (data.getImage() != null) {
-    File imageFile = data.getImage().getFile();
-    if (imageFile != null && imageFile.exists()) {
-        ps.setBytes(6, getByteImage(imageFile));
-    } else {
-        ps.setBytes(6, null);
-        System.out.println("Image file does not exist: " + imageFile.getAbsolutePath());
-    }
-} else {
-    ps.setBytes(6, null);
-}
-            ps.setString(7,data.getDescription());
-            ps.setDate(8, (Date) data.getDateRequest());
-            ps.setDate(9, (Date) data.getDateReceive());
-                 ps.executeUpdate();
-                 
-        } catch (Exception e) {
-        e.printStackTrace();
+   
+  public void addItem(ItemsInfoModel data) {
+    try {
+        // Check if ItemLocation is null or empty
+        if (data.getItemLocation() == null || data.getItemLocation().isEmpty()) {
+            System.out.println("ItemLocation is null or empty, setting a default value.");
+            data.setItemLocation("Default Location"); // Provide a default value
         }
+
+        // Create the SQL INSERT statement
+        String sql = "INSERT INTO additem (Item_ID, ItemName, Category, ItemLocation, Quantity, ItemImage, Description, DateRequested, DateReceive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        // Prepare the statement
+        ps = prepareStatement(sql);
+
+        // Set the values
+        ps.setString(1, data.getItemID());
+        ps.setString(2, data.getItemName());
+        ps.setString(3, data.getCategory());
+        ps.setString(4, data.getItemLocation());
+        ps.setInt(5, data.getQuantity());
+
+        // Handle image insertion
+        if (data.getImage() != null) {
+            File imageFile = data.getImage().getFile();
+            if (imageFile != null && imageFile.exists()) {
+                ps.setBytes(6, getByteImage(imageFile));
+            } else {
+                ps.setBytes(6, null);
+                System.out.println("Image file does not exist: " + imageFile.getAbsolutePath());
+            }
+        } else {
+            ps.setBytes(6, null);
+        }
+
+        // Set remaining fields
+        ps.setString(7, data.getDescription());
+        ps.setDate(8, (Date) data.getDateRequest());
+        ps.setDate(9, (Date) data.getDateReceive());
+
+        // Execute the update
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
     }
-    
+}
     public void updateItem(ItemsInfoModel data) {
     try {
         // Create the SQL UPDATE statement
@@ -164,11 +186,27 @@ public List<ItemsInfoModel> getAll()throws SQLException {
             if (imageFile != null && imageFile.exists()) {
                 ps.setBytes(5, getByteImage(imageFile));  // Set image bytes
             } else {
+                // If the image file does not exist, set it to null
+                System.out.println("Image file does not exist: " + (imageFile != null ? imageFile.getAbsolutePath() : "null"));
                 ps.setBytes(5, null);
-                System.out.println("Image file does not exist: " + imageFile.getAbsolutePath());
             }
         } else {
-            ps.setBytes(5, null);  // No image update
+            // If no new image is provided, we need to retain the existing image
+            // Fetch the existing image from the database
+            String existingImageSql = "SELECT ItemImage FROM additem WHERE Item_ID=?";
+            PreparedStatement existingImagePs = prepareStatement(existingImageSql);
+            existingImagePs.setString(1, data.getItemID());
+            ResultSet rs = existingImagePs.executeQuery();
+            if (rs.next()) {
+                Blob existingBlob = (Blob) rs.getBlob("ItemImage");
+                if (existingBlob != null) {
+                    ps.setBytes(5, existingBlob.getBytes(1, (int) existingBlob.length())); // Set existing image bytes
+                } else {
+                    ps.setBytes(5, null); // If there's no existing image, set to null
+                }
+            }
+            rs.close();
+            existingImagePs.close();
         }
 
         // Set remaining fields
@@ -183,9 +221,18 @@ public List<ItemsInfoModel> getAll()throws SQLException {
         ps.executeUpdate();
     } catch (Exception e) {
         e.printStackTrace();
+    } finally {
+        // Close the PreparedStatement if necessary
+        if (ps != null) {
+            try {
+                ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
-    
+
      private Connection getConnection() {
         DatabaseConnection databaseConnection = new DatabaseConnection();
         try {

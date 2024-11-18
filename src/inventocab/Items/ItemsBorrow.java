@@ -2,18 +2,47 @@
 package inventocab.Items;
 
 import com.formdev.flatlaf.ui.FlatListCellBorder.Selected;
+import inventocab.Event.EventItem;
+import inventocab.Forms.PopItemForm;
+
 import inventocab.Models.ItemsInfoModel;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import raven.modal.ModalDialog;
+import raven.modal.component.SimpleModalBorder;
+import raven.modal.demo.layout.ResponsiveLayout;
 
 /**
  *
  * @author Calyle
  */
 public class ItemsBorrow extends javax.swing.JPanel {
+     private PopItemForm popItemForm;
 
     /**
      * @return the selected
      */
+     
+    public ItemsInfoModel getData() {
+        return data;
+    }
+
+  
+   public javax.swing.JTextField getJTextField10() {
+    return quantityField;
+}
+    
+   private ItemsInfoModel data;
+//     Your component initialization code here
+//     </editor-fold>
     public boolean isSelected() {
         return selected;
     }
@@ -28,32 +57,43 @@ public class ItemsBorrow extends javax.swing.JPanel {
     /**
      * @return the data
      */
-    public ItemsInfoModel getData() {
-        return data;
-    }
+    
 
     /**
      * @param data the data to set
      */
+    
+     
+
+   
+    public void setQtyData(int qtyData){
+        this.qtyData = qtyData;
+        String qtyStr = Integer.toString(qtyData);
+        quantityField.setText(qtyStr);
+    }
+       private int qtyData;;
     public void setData(ItemsInfoModel data) {
         this.data = data;
-        
+
         
         String qty = Integer.toString(data.getQuantity());
        itemsId.setText(data.getItemID());
         
         itemsName.setText(data.getItemName());
         quantity.setText(qty);
-       
+        String cartQtyStr = Integer.toString(data.getCartQuantity());
+        quantityField.setText(cartQtyStr);
         category.setText(data.getCategory());
+        
     }
 
    private boolean selected;
-   private ItemsInfoModel data;
-   
+  
+
  
     public ItemsBorrow() {
         initComponents();
+         
         
          jButton1.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -68,18 +108,48 @@ public class ItemsBorrow extends javax.swing.JPanel {
         }
     });
     
+    
     // ActionListener for manually inputting the quantity
-    jTextField10.addActionListener(new java.awt.event.ActionListener() {
+    quantityField.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             updateQuantityFromTextField();
         }
     });
+    deleteBut.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Show a confirmation dialog
+        int result = JOptionPane.showConfirmDialog(ItemsBorrow.this, "Are you sure you want to remove this item?", "Confirm", JOptionPane.YES_NO_OPTION);
+        
+        if (result == JOptionPane.YES_OPTION) {
+            // Remove the item from the list
+            if (popItemForm != null) {
+                popItemForm.removeItem(ItemsBorrow.this);
+            }
+        }
+    }
+});
+}
+public JButton getAddbtn(){
+    return jButton1;
+}
+public JButton getMinusbtn(){
+    return jButton2;
+}
+public JButton getRemovebtn(){
+    return deleteBut;
 }
 
 // Method to increase the quantity
 private void increaseQuantity() {
     int currentQuantity = getCurrentQuantityFromTextField(); // Get validated quantity from text field
-    currentQuantity++; // Increase the quantity
+    if (currentQuantity < data.getQuantity()) {
+        currentQuantity++; // Increase the quantity
+    } else {
+        JOptionPane.showMessageDialog(this, "Invalid quantity. Maximum available: " + data.getQuantity(), "Error", JOptionPane.ERROR_MESSAGE);
+        quantityField.setText(String.valueOf(data.getQuantity())); // Reset to maximum available quantity
+        return;
+    }
     updateQuantityFields(currentQuantity); // Update all fields
 }
 
@@ -98,13 +168,13 @@ private void updateQuantityFromTextField() {
     if (inputQuantity > 0) {
         updateQuantityFields(inputQuantity); // Update if input is valid (greater than 0)
     } else {
-        jTextField10.setText("1"); // Set to 1 if invalid
+        quantityField.setText("1"); // Set to 1 if invalid
     }
 }
 
 // Method to get the current quantity from the text field with validation
 private int getCurrentQuantityFromTextField() {
-    String text = jTextField10.getText().trim(); // Get the text and trim any whitespace
+    String text = quantityField.getText().trim(); // Get the text and trim any whitespace
     
     // Check if the text field is empty or contains invalid data
     if (text.isEmpty()) {
@@ -116,39 +186,38 @@ private int getCurrentQuantityFromTextField() {
         return Integer.parseInt(text);
     } catch (NumberFormatException e) {
         // If the input is invalid, default to 1
-        jTextField10.setText("1");
+        quantityField.setText("1");
         return 1;
     }
 }
 
-// Method to update all quantity-related fields and the data model
-private void updateQuantityFields(int quantityValue) {
 
-  try {
-        int inputQuantity = Integer.parseInt(jTextField10.getText()); // Get the quantity from the text field
-        
-        // Check if input exceeds available quantity
-        if (inputQuantity == data.getQuantity()) {
-            // Notify the user or handle invalid input
-            jTextField10.setText(String.valueOf(data.getQuantity())); // Reset to maximum available quantity
-            JOptionPane.showMessageDialog(this, "Invalid quantity. Maximum available: " + data.getQuantity(), "Error", JOptionPane.ERROR_MESSAGE);
-            return; // Exit the method early to avoid further processing
-        } 
-        
-        // Validate input to be positive
-        if (inputQuantity <= 0) {
-            jTextField10.setText("1"); // Set to 1 if invalid
-        } else {
-            data.setQuantity(quantityValue);
-            updateQuantityFields(inputQuantity); // Update if input is valid
-        }
-        
-    } catch (NumberFormatException e) {
-        jTextField10.setText("1");
+    public void setPopItemForm(PopItemForm popItemForm) {
+    this.popItemForm = popItemForm;
+}
+
+private void updateQuantityFields(int quantityValue) {
+    if (quantityValue > data.getQuantity()) {
+        JOptionPane.showMessageDialog(this, "Invalid quantity. Maximum available: " + data.getQuantity(), "Error", JOptionPane.ERROR_MESSAGE);
+        quantityField.setText(String.valueOf(data.getQuantity())); // Reset to maximum available quantity
+        return;
+    }
+
+    quantityField.setText(String.valueOf(quantityValue)); // Update the quantity in the jTextField10
+}
+public void updateQuantityField(int quantity) {
+     System.out.println(" quantity: " + quantity);
+      data.setQuantity(quantity);
+    this.quantity.setText(String.valueOf(quantity));
+}
+public void updateQuantity(ItemsInfoModel item, int newQuantity) {
+   if (item.getItemID().equals(data.getItemID())) {
+        data.setQuantity(newQuantity);
+        quantity.setText(String.valueOf(newQuantity));
     }
 }
 
-   private int qnty = 1;
+
   
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -166,7 +235,8 @@ private void updateQuantityFields(int quantityValue) {
         itemsName = new javax.swing.JLabel();
         quantity = new javax.swing.JLabel();
         category = new javax.swing.JLabel();
-        jTextField10 = new javax.swing.JTextField();
+        quantityField = new javax.swing.JTextField();
+        deleteBut = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
@@ -196,44 +266,52 @@ private void updateQuantityFields(int quantityValue) {
 
         category.setText("jLabel8");
 
-        jTextField10.setEditable(false);
-        jTextField10.setOpaque(true);
+        quantityField.setEditable(false);
+        quantityField.setOpaque(true);
+
+        deleteBut.setForeground(new java.awt.Color(204, 204, 204));
+        deleteBut.setText("X");
 
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
+            .addGroup(panelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel3))
-                .addGap(23, 23, 23)
-                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(category)
-                    .addComponent(itemsName)
-                    .addComponent(itemsId)
-                    .addComponent(quantity))
-                .addGap(0, 128, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2)
-                .addGap(1, 1, 1)
-                .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
-                .addComponent(jButton1)
-                .addGap(5, 5, 5))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
+                        .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel3))
+                        .addGap(23, 23, 23)
+                        .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(category)
+                            .addComponent(itemsName)
+                            .addGroup(panelLayout.createSequentialGroup()
+                                .addComponent(itemsId)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
+                                .addComponent(deleteBut, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(quantity)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton2)
+                        .addGap(1, 1, 1)
+                        .addComponent(quantityField, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addComponent(jButton1)))
+                .addContainerGap())
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(itemsId)
-                    .addComponent(jLabel1))
-                .addGap(10, 10, 10)
+                    .addComponent(itemsId, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(deleteBut))
+                .addGap(6, 6, 6)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(itemsName)
                     .addComponent(jLabel2))
@@ -247,7 +325,7 @@ private void updateQuantityFields(int quantityValue) {
                     .addComponent(jLabel3))
                 .addGap(1, 1, 1)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(quantityField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -265,9 +343,11 @@ private void updateQuantityFields(int quantityValue) {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel category;
+    private javax.swing.JButton deleteBut;
     private javax.swing.JLabel itemsId;
     private javax.swing.JLabel itemsName;
     private javax.swing.JButton jButton1;
@@ -276,9 +356,13 @@ private void updateQuantityFields(int quantityValue) {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField jTextField10;
     private javax.swing.JPanel panel;
     private javax.swing.JLabel quantity;
+    public javax.swing.JTextField quantityField;
     private inventocab.Swing.ResposiveItem2 resposiveItem21;
     // End of variables declaration//GEN-END:variables
+
+   
+
+   
 }

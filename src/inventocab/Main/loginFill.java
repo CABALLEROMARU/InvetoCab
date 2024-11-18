@@ -103,7 +103,7 @@ public void addEventSignin (ActionListener event){
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(jLabel3)
@@ -112,7 +112,7 @@ public void addEventSignin (ActionListener event){
                         .addComponent(Password, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(Username, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(cmdSignup, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 23, Short.MAX_VALUE))
+                .addGap(0, 20, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(57, 57, 57)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -171,29 +171,30 @@ public void addEventSignin (ActionListener event){
         // Get the parent window (login frame)
         final login topFrame = (login) SwingUtilities.getWindowAncestor(this);
         Main main = new Main();
-
-        // Show modal dialog
-        ModalDialog.showModal(this, new SimpleMessageModal(
-            SimpleMessageModal.Type.WARNING,
-            "Security Information."+"\n"+"This system contains data that ONLY authorized personnel" +"\n"+"can use."+"\n "+ "Do want to continue?",     
-                
-                
-            "Important Notice!", SimpleModalBorder.OK_OPTION,
-            new ModalCallback() {
-                @Override
-                public void action(ModalController mc, int i) {
-                    if (i == SimpleModalBorder.OK_OPTION) {
-                       
-                        topFrame.setVisible(false);
+ topFrame.setVisible(false);
                         main.setVisible(true);
-
-                        mc.close();
-                    } else {
-                        mc.close();
-                    }
-                }
-            }
-        ), option);
+        // Show modal dialog
+//        ModalDialog.showModal(this, new SimpleMessageModal(
+//            SimpleMessageModal.Type.WARNING,
+//            "Security Information."+"\n"+"This system contains data that ONLY authorized personnel" +"\n"+"can use."+"\n "+ "Do want to continue?",     
+//                
+//                
+//            "Important Notice!", SimpleModalBorder.OK_OPTION,
+//            new ModalCallback() {
+//                @Override
+//                public void action(ModalController mc, int i) {
+//                    if (i == SimpleModalBorder.OK_OPTION) {
+//                       
+//                        topFrame.setVisible(false);
+//                        main.setVisible(true);
+//
+//                        mc.close();
+//                    } else {
+//                        mc.close();
+//                    }
+//                }
+//            }
+//        ), option);
 
     } else {
         // Show error message for invalid credentials

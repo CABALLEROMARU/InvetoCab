@@ -61,9 +61,7 @@ public class Model_Menu {
     private String name;
     private MenuType type;
 
-     public Icon toIcon() {
-        return new ImageIcon(getClass().getResource("/inventocab/icons/" + icon + ".png"));
-    }
+    
 
     public static enum MenuType {
         TITLE, MENU, EMPTY

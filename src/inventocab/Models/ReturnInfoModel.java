@@ -12,26 +12,26 @@ import java.util.List;
  *
  * @author Calyle
  */
-public class BorrowerInfoModel {
+public class ReturnInfoModel {
 
     /**
      * @return the DateReturn
      */
-   
+    public Date getDateReturn() {
+        return DateReturn;
+    }
+
+    /**
+     * @param DateReturn the DateReturn to set
+     */
+    public void setDateReturn(Date DateReturn) {
+        this.DateReturn = DateReturn;
+    }
 
     /**
      * @return the AllItemsID
      */
-    public String getAllItemsID() {
-        return AllItemsID;
-    }
-
-    /**
-     * @param AllItemsID the AllItemsID to set
-     */
-    public void setAllItemsID(String AllItemsID) {
-        this.AllItemsID = AllItemsID;
-    }
+   
 
     /**
      * @return the DateReturn
@@ -110,16 +110,17 @@ public List<ItemsInfoModel> getCartList() {
     public void setLenderName(String LenderName) {
         this.LenderName = LenderName;
     }
-public BorrowerInfoModel(){
+public ReturnInfoModel(){
     
 }
-    public BorrowerInfoModel(String BorrowerId, String BorrowerName, String LenderName, List<ItemsInfoModel> cartList,Date DateRequest, String AllItemsID) {
+    public ReturnInfoModel(String BorrowerId, String BorrowerName, String LenderName, List<ItemsInfoModel> cartList,Date DateRequest, Date DateReturn) {
          this.BorrowerId = BorrowerId;
            this.BorrowerName = BorrowerName;
             this.LenderName = LenderName;
            this.cartList = cartList;
              this.DateRequest = DateRequest;
-             this.AllItemsID = AllItemsID;
+            
+             this.DateReturn = DateReturn;
              
     }
 
@@ -128,9 +129,9 @@ public BorrowerInfoModel(){
   private String BorrowerName;
     private String LenderName;
     private Date DateRequest;
-    private String AllItemsID;
-
-      private List<ItemsInfoModel>cartList;
+   
+    private Date DateReturn;
+      private List<ItemsInfoModel>cartList = new ArrayList <>();
       
 
 }

@@ -4,6 +4,7 @@ package inventocab.Swing;
 import inventocab.Event.Event;
 import inventocab.Model.Model_Menu;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -15,7 +16,7 @@ import javax.swing.SwingUtilities;
 
 
 public class ListMenu <E extends Object> extends JList<E> {
-    private final DefaultListModel model;
+    private final DefaultListModel<E> model;
     private int selectedIndex = -1;
     private int overIndex = -1;
     private Event event;
@@ -25,7 +26,7 @@ public class ListMenu <E extends Object> extends JList<E> {
   }
     public ListMenu(){
        
-         model = new DefaultListModel();
+         model = new DefaultListModel<>();
         setModel(model);
         addMouseListener(new MouseAdapter() {
             @Override
@@ -92,12 +93,14 @@ public class ListMenu <E extends Object> extends JList<E> {
                 MenuItem item = new MenuItem(data);
                 item.setSelected(selectedIndex == index);
                item.setOver(overIndex == index);
+                item.setFont(new Font("Segoe UI", Font.BOLD, 14));
                 return item;
             }
 
         };
     }
+    @SuppressWarnings("unchecked")
      public void addItem(Model_Menu data) {
-        model.addElement(data);
+        model.addElement((E) data); // Cast required for mixed usage
     }
 }
