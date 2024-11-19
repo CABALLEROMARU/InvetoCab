@@ -20,16 +20,11 @@ import raven.modal.ModalDialog;
 import raven.modal.component.SimpleModalBorder;
 import raven.modal.demo.layout.ResponsiveLayout;
 
-/**
- *
- * @author Calyle
- */
+
 public class ItemsBorrow extends javax.swing.JPanel {
      private PopItemForm popItemForm;
 
-    /**
-     * @return the selected
-     */
+    
      
     public ItemsInfoModel getData() {
         return data;
@@ -41,27 +36,20 @@ public class ItemsBorrow extends javax.swing.JPanel {
 }
     
    private ItemsInfoModel data;
-//     Your component initialization code here
-//     </editor-fold>
+
     public boolean isSelected() {
         return selected;
     }
 
-    /**
-     * @param selected the selected to set
-     */
+    
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
 
-    /**
-     * @return the data
-     */
+   
     
 
-    /**
-     * @param data the data to set
-     */
+    
     
      
 
@@ -101,7 +89,7 @@ public class ItemsBorrow extends javax.swing.JPanel {
         }
     });
     
-    // ActionListener for decreasing the quantity
+    
     jButton2.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             decreaseQuantity();
@@ -109,7 +97,7 @@ public class ItemsBorrow extends javax.swing.JPanel {
     });
     
     
-    // ActionListener for manually inputting the quantity
+   
     quantityField.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             updateQuantityFromTextField();
@@ -118,11 +106,11 @@ public class ItemsBorrow extends javax.swing.JPanel {
     deleteBut.addActionListener(new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Show a confirmation dialog
+       
         int result = JOptionPane.showConfirmDialog(ItemsBorrow.this, "Are you sure you want to remove this item?", "Confirm", JOptionPane.YES_NO_OPTION);
         
         if (result == JOptionPane.YES_OPTION) {
-            // Remove the item from the list
+          
             if (popItemForm != null) {
                 popItemForm.removeItem(ItemsBorrow.this);
             }
@@ -140,52 +128,52 @@ public JButton getRemovebtn(){
     return deleteBut;
 }
 
-// Method to increase the quantity
+
 private void increaseQuantity() {
-    int currentQuantity = getCurrentQuantityFromTextField(); // Get validated quantity from text field
+    int currentQuantity = getCurrentQuantityFromTextField(); 
     if (currentQuantity < data.getQuantity()) {
-        currentQuantity++; // Increase the quantity
+        currentQuantity++; 
     } else {
         JOptionPane.showMessageDialog(this, "Invalid quantity. Maximum available: " + data.getQuantity(), "Error", JOptionPane.ERROR_MESSAGE);
-        quantityField.setText(String.valueOf(data.getQuantity())); // Reset to maximum available quantity
+        quantityField.setText(String.valueOf(data.getQuantity())); 
         return;
     }
-    updateQuantityFields(currentQuantity); // Update all fields
+    updateQuantityFields(currentQuantity); 
 }
 
-// Method to decrease the quantity
+
 private void decreaseQuantity() {
-    int currentQuantity = getCurrentQuantityFromTextField(); // Get validated quantity from text field
+    int currentQuantity = getCurrentQuantityFromTextField(); 
     if (currentQuantity > 1) {
-        currentQuantity--; // Decrease the quantity
+        currentQuantity--; 
     }
-    updateQuantityFields(currentQuantity); // Update all fields
+    updateQuantityFields(currentQuantity); 
 }
 
-// Method to update quantity from the text field (manual input)
+
 private void updateQuantityFromTextField() {
-    int inputQuantity = getCurrentQuantityFromTextField(); // Get validated quantity from text field
+    int inputQuantity = getCurrentQuantityFromTextField(); 
     if (inputQuantity > 0) {
-        updateQuantityFields(inputQuantity); // Update if input is valid (greater than 0)
+        updateQuantityFields(inputQuantity);
     } else {
-        quantityField.setText("1"); // Set to 1 if invalid
+        quantityField.setText("1"); 
     }
 }
 
-// Method to get the current quantity from the text field with validation
+
 private int getCurrentQuantityFromTextField() {
-    String text = quantityField.getText().trim(); // Get the text and trim any whitespace
+    String text = quantityField.getText().trim(); 
     
-    // Check if the text field is empty or contains invalid data
+  
     if (text.isEmpty()) {
-        return 1; // Default to 1 if empty
+        return 1; 
     }
     
     try {
-        // Try to parse the text as an integer
+        
         return Integer.parseInt(text);
     } catch (NumberFormatException e) {
-        // If the input is invalid, default to 1
+       
         quantityField.setText("1");
         return 1;
     }
@@ -199,11 +187,11 @@ private int getCurrentQuantityFromTextField() {
 private void updateQuantityFields(int quantityValue) {
     if (quantityValue > data.getQuantity()) {
         JOptionPane.showMessageDialog(this, "Invalid quantity. Maximum available: " + data.getQuantity(), "Error", JOptionPane.ERROR_MESSAGE);
-        quantityField.setText(String.valueOf(data.getQuantity())); // Reset to maximum available quantity
+        quantityField.setText(String.valueOf(data.getQuantity())); 
         return;
     }
 
-    quantityField.setText(String.valueOf(quantityValue)); // Update the quantity in the jTextField10
+    quantityField.setText(String.valueOf(quantityValue)); 
 }
 public void updateQuantityField(int quantity) {
      System.out.println(" quantity: " + quantity);

@@ -35,11 +35,11 @@ public class Main extends javax.swing.JFrame {
    
     public Main() throws SQLException, Exception {
         initComponents();
-//         setSize(Toolkit.getDefaultToolkit().getScreenSize());
+
 
       
        form = new PopItemForm();
-      /*  test = new test1();*/
+      
          form3 = new Form_3();
          item_Form = new Item_Form();
          borrowlogs = new BorrowLogs();
@@ -56,7 +56,7 @@ public class Main extends javax.swing.JFrame {
                 }else if (index == 1){
                    if (item_Form != null) {
                 try {
-                    item_Form.populateAddData(); // Assuming this method refreshes the data
+                    item_Form.populateAddData(); 
                 } catch (SQLException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -65,7 +65,7 @@ public class Main extends javax.swing.JFrame {
                 }else if (index == 2){
                      if (borrowlogs != null) {
                 try {
-                    borrowlogs.populateAddDataLogs(form, item_Form);// Assuming this method refreshes the data
+                    borrowlogs.populateAddDataLogs(form, item_Form);
                 } catch (SQLException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }        catch (Exception ex) {
@@ -74,6 +74,15 @@ public class Main extends javax.swing.JFrame {
             }
                     setForm(borrowlogs);
                 }   else if (index == 3){
+                    if (form3 != null) {
+                try {
+                    form3.populateAddDataRec(form, item_Form);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }        catch (Exception ex) {
+                             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                         }
+            }
                     setForm(form3);
                 }
                 else if (index == 4){
@@ -116,13 +125,7 @@ if (response == JOptionPane.YES_OPTION) {
         setForm(new PopItemForm());
         
     
-//        
-//         if (this.getExtendedState()==Main.MAXIMIZED_BOTH) {
-//            this.setExtendedState(Main.NORMAL);
-//        }
-//        else{
-//            this.setExtendedState(Main.MAXIMIZED_BOTH);
-//        }
+
         
        
     
@@ -137,7 +140,7 @@ if (response == JOptionPane.YES_OPTION) {
 }
 private void showFrame(JFrame frame) {
     frame.setVisible(true);
-    this.dispose(); // Optionally dispose of the current frame if needed
+    this.dispose(); 
 }
   
     @SuppressWarnings("unchecked")
@@ -198,9 +201,7 @@ private void showFrame(JFrame frame) {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
+    
     public static void main(String args[]) {
       FlatRobotoFont.install();
         FlatLaf.registerCustomDefaultsSource("sample/Theme");

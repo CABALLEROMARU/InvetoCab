@@ -29,18 +29,14 @@ import raven.modal.option.Option;
 
 public class loginFill extends javax.swing.JPanel {
 
-    /**
-     * @return the user
-     */
+    
     public UserInfoModel getUser() {
           String username = Username.getText();
     char[] password = Password.getPassword();
         return new UserInfoModel(username, password);
     }
 
-    /**
-     * @param user the user to set
-     */
+   
     public void setUser(UserInfoModel user) {
         this.user = user;
     }
@@ -140,7 +136,7 @@ public void addEventSignin (ActionListener event){
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButton1ActionPerformed
-        // TODO add your handling code here:
+        
         String username = Username.getText();
     char[] password = Password.getPassword();
     UserInfoModel loginUser = new UserInfoModel(username, password);
@@ -149,60 +145,36 @@ public void addEventSignin (ActionListener event){
  
 
     try {
-//       
-                           
-                                
-//        
+
  UserInfoModel loggedInUser = controller.Login(loginUser);
 
     if (loggedInUser != null) {
-        // Create modal dialog options
+       
         Option option = ModalDialog.createOption();
         option.getLayoutOption()
               
               .setLocation(Location.CENTER, Location.CENTER)
               .setAnimateDistance(0.7f, 0);
 
-        // Modal dialog options array
+        
         SimpleModalBorder.Option[] options = new SimpleModalBorder.Option[]{
             new SimpleModalBorder.Option("Continue", SimpleModalBorder.OK_OPTION)
         };
 
-        // Get the parent window (login frame)
+       
         final login topFrame = (login) SwingUtilities.getWindowAncestor(this);
         Main main = new Main();
  topFrame.setVisible(false);
                         main.setVisible(true);
-        // Show modal dialog
-//        ModalDialog.showModal(this, new SimpleMessageModal(
-//            SimpleMessageModal.Type.WARNING,
-//            "Security Information."+"\n"+"This system contains data that ONLY authorized personnel" +"\n"+"can use."+"\n "+ "Do want to continue?",     
-//                
-//                
-//            "Important Notice!", SimpleModalBorder.OK_OPTION,
-//            new ModalCallback() {
-//                @Override
-//                public void action(ModalController mc, int i) {
-//                    if (i == SimpleModalBorder.OK_OPTION) {
-//                       
-//                        topFrame.setVisible(false);
-//                        main.setVisible(true);
-//
-//                        mc.close();
-//                    } else {
-//                        mc.close();
-//                    }
-//                }
-//            }
-//        ), option);
+      
 
     } else {
-        // Show error message for invalid credentials
+       
         JOptionPane.showMessageDialog(this, "Login failed: Invalid credentials", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
 } catch (Exception e) {
-    // Catch any other unexpected errors
+   
     e.printStackTrace();
     JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 }

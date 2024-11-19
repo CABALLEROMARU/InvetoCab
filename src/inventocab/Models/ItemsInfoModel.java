@@ -8,58 +8,42 @@ import javax.swing.ImageIcon;
 
 public class ItemsInfoModel {
 
-    /**
-     * @return the icon
-     */
+   
     public ImageIcon getIcon() {
         return icon;
     }
 
-    /**
-     * @param icon the icon to set
-     */
+   
     public void setIcon(ImageIcon icon) {
         this.icon = icon;
     }
 
-    /**
-     * @return the cartQuantity
-     */
+  
     public int getCartQuantity() {
         return cartQuantity;
     }
 
-    /**
-     * @param cartQuantity the cartQuantity to set
-     */
+  
     public void setCartQuantity(int cartQuantity) {
         this.cartQuantity = cartQuantity;
     }
 
-    /**
-     * @return the dateRequest
-     */
+    
     public Date getDateRequest() {
         return dateRequest;
     }
 
-    /**
-     * @param dateRequest the dateRequest to set
-     */
+   
     public void setDateRequest(Date dateRequest) {
         this.dateRequest = dateRequest;
     }
 
-    /**
-     * @return the dateReceive
-     */
+    
     public Date getDateReceive() {
         return dateReceive;
     }
 
-    /**
-     * @param dateReceive the dateReceive to set
-     */
+    
     public void setDateReceive(Date dateReceive) {
         this.dateReceive = dateReceive;
     }

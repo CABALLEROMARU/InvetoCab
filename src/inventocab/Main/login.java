@@ -20,16 +20,13 @@ import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-/**
- *
- * @author Calyle
- */
+
 public class login extends javax.swing.JFrame {
 
    private JLayeredPane layeredSnapshot;
     public login() {
         initComponents();
-//             setSize(Toolkit.getDefaultToolkit().getScreenSize());
+
  
     
   
@@ -43,7 +40,7 @@ public class login extends javax.swing.JFrame {
              log.addEventSignin(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                //  Show register form
+               
                 slide.show(1);
                sign.Signin();
             }
@@ -189,9 +186,7 @@ if (response == JOptionPane.YES_OPTION) {
 }
     }//GEN-LAST:event_jLabel3MouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
+    
     public static void main(String args[]) throws SQLException, Exception, Exception {
          FlatRobotoFont.install();
         FlatLaf.registerCustomDefaultsSource("sample/Theme");

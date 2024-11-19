@@ -7,10 +7,7 @@ package inventocab.Swing;
 import com.formdev.flatlaf.FlatClientProperties;
 import javax.swing.JButton;
 
-/**
- *
- * @author Calyle
- */
+
 public class ButtonAction extends JButton {
     
     public ButtonAction(){

@@ -23,23 +23,18 @@ import raven.datetime.component.date.DatePicker;
 public class addItemspop extends javax.swing.JPanel {
 
     
-//    public ItemsInfoModel getData() {
-//       int quantity = Integer.parseInt(this.quantity.getText());
-//        return new ItemsInfoModel(idLbl.getText(), Itemname.getText(),(String) category.getSelectedItem()
-//                ,(String) cabinetdr.getSelectedItem(), quantity, itemImageModel, description.getText());
-//        
-//    }
+
 public ItemsInfoModel getData() {
     try {
         String quantityText = this.quantity.getText();
-        int quantity = Integer.parseInt(quantityText);  // Parse the quantity if it's a valid integer
+        int quantity = Integer.parseInt(quantityText);  
         Date dateRequestedData = dateRequested.isDateSelected() ? Date.valueOf(dateRequested.getSelectedDate()) : null;
         Date dateReceiveData = dateReceive.isDateSelected() ? Date.valueOf(dateReceive.getSelectedDate()) : null;
 
-        // Make sure to get the ItemLocation from the cabinetdr JComboBox
+       
         String itemLocation = (String) cabinetdr.getSelectedItem();
 
-        // Get the image from the itemImage PictureBox
+       
         ItemImageModel image = new ItemImageModel();
        
 
@@ -54,15 +49,15 @@ public ItemsInfoModel getData() {
 }
 
 public void processItemData() {
-    ItemsInfoModel data = getData();  // getData() might return null
+    ItemsInfoModel data = getData(); 
 
     if (data != null) {
-        // Only proceed if data is not null
+       
         System.out.println("Item ID: " + data.getItemID());
         System.out.println("Item Name: " + data.getItemName());
-        // Additional operations with the data...
+      
     } else {
-        // Handle the case where data is null (invalid input)
+       
         System.err.println("Error: Could not process item data due to invalid input.");
     }
 }
@@ -70,7 +65,7 @@ public void processItemData() {
     this.data = data;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
    
-    // Check for null dates and format accordingly
+   
     String dateReqStr = (data.getDateRequest() != null) ? dateFormat.format(data.getDateRequest()) : "";
     String dateRecStr = (data.getDateReceive() != null) ? dateFormat.format(data.getDateReceive()) : "";
     String qty = Integer.toString(data.getQuantity());
@@ -83,11 +78,11 @@ public void processItemData() {
     dateReq.setText(dateReqStr);
     dateRec.setText(dateRecStr);
     
-    // Set the image only if it's not null
+   
     if (data.getImage() != null && data.getImage().getIcon() != null) {
         itemImage.setImage(data.getImage().getIcon());
     } else {
-        // Set to default image if the data image is null
+       
         itemImage.setImage(new ImageIcon(getClass().getResource("/inventocab/Icons/defaultImage.png")));
     }
 }
@@ -329,7 +324,7 @@ private ItemImageModel itemImageModel;
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-//      itemImage.setImage(new FlatSVGIcon("inventocab/icons/8.png",3f));
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
 

@@ -25,7 +25,7 @@ public class PictureBox extends JLayeredPane {
     private Icon image;
 
     public PictureBox() {
-        // Enable drop support
+      
         setDropTarget(new DropTarget(this, new DropTargetAdapter() {
             
             @Override

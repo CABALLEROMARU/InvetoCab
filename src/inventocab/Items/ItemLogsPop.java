@@ -14,7 +14,6 @@ import inventocab.Forms.PopItemForm;
 import inventocab.Forms.addItemspop;
 import inventocab.Models.BorrowerInfoModel;
 import inventocab.Models.ItemsInfoModel;
-import inventocab.Models.ReturnInfoModel;
 import java.awt.Component;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -38,10 +37,7 @@ import raven.modal.listener.ModalController;
 import raven.modal.option.Location;
 import raven.modal.option.Option;
 
-/**
- *
- * @author Calyle
- */
+
 public class ItemLogsPop extends javax.swing.JPanel {
     private BorrowerInfoModel data;
  private ItemsInfoModel items;
@@ -68,19 +64,19 @@ public class ItemLogsPop extends javax.swing.JPanel {
  public void setData(BorrowerInfoModel data) {
     this.data = data;
 
-    // Initialize the date format
+ 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    // Check if the dateRequest is null and format accordingly
+    
     String dateReqStr = (data.getDateRequest() != null) ? dateFormat.format(data.getDateRequest()) : "N/A"; // Default value for null
 
-    // Set the text fields
+    
     borId.setText(data.getBorrowerId());
     borName.setText(data.getBorrowerName());
     lenName.setText(data.getLenderName());
     dateBOR.setText(dateReqStr);
 
-    // Process cartList to display itemName, category, and quantity
+  
     List<ItemsInfoModel> cartList = data.getCartList();
     if (cartList != null && !cartList.isEmpty()) {
         StringBuilder itemsText = new StringBuilder();
@@ -88,7 +84,7 @@ public class ItemLogsPop extends javax.swing.JPanel {
             itemsText.append("Name: ").append(item.getItemName()).append("\n")
                      .append("Category: ").append(item.getCategory()).append("\n")
                      .append("Quantity: ").append(item.getQuantity())
-                     .append("\n").append("\n"); // Add a newline for each item
+                     .append("\n").append("\n"); 
         }
         listItemField.setText(itemsText.toString());
     } else {
@@ -134,7 +130,6 @@ public class ItemLogsPop extends javax.swing.JPanel {
     public JButton returnbutton(){
         return returnbutton;
     }
- 
  
 
  
@@ -202,15 +197,15 @@ public class ItemLogsPop extends javax.swing.JPanel {
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(dateBOR, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dateRet, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lenName, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(borName, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(29, 29, 29)
-                        .addComponent(borId))
-                    .addComponent(dateBOR, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(147, 147, 147)
+                        .addComponent(borId, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(182, 182, 182)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addComponent(returnbutton)
@@ -223,7 +218,7 @@ public class ItemLogsPop extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(borName)
-                    .addComponent(borId))
+                    .addComponent(borId, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -247,8 +242,7 @@ public class ItemLogsPop extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void returnbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnbuttonActionPerformed
-
-
+    
     }//GEN-LAST:event_returnbuttonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import static java.nio.file.Files.list;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,7 +50,7 @@ public List<ItemsInfoModel> getAll()throws SQLException {
           ps = prepareStatement(sql); 
         rs = ps.executeQuery(); 
          while (rs.next()) {
-            // Create a new ItemsInfoModel for each record in the result set
+           
             ItemsInfoModel item = new ItemsInfoModel();
             item.setItemID(rs.getString("Item_ID"));
             item.setItemName(rs.getString("ItemName"));
@@ -73,7 +74,7 @@ public List<ItemsInfoModel> getAll()throws SQLException {
             
             item.setDescription(rs.getString("Description"));
             
-            // Add the item to the list
+           
             list.add(item);
         }
         
@@ -83,7 +84,7 @@ public List<ItemsInfoModel> getAll()throws SQLException {
           e.printStackTrace();
         throw e;
     }finally {
-        // Close the ResultSet and PreparedStatement
+       
         if (rs != null) {
             rs.close();
         }
@@ -123,44 +124,60 @@ public List<ItemsInfoModel> getAll()throws SQLException {
    
   public void addItem(ItemsInfoModel data) {
     try {
-        // Check if ItemLocation is null or empty
+       
         if (data.getItemLocation() == null || data.getItemLocation().isEmpty()) {
             System.out.println("ItemLocation is null or empty, setting a default value.");
-            data.setItemLocation("Default Location"); // Provide a default value
+            data.setItemLocation("Default Location");
         }
 
-        // Create the SQL INSERT statement
+       
         String sql = "INSERT INTO additem (Item_ID, ItemName, Category, ItemLocation, Quantity, ItemImage, Description, DateRequested, DateReceive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        // Prepare the statement
+        
         ps = prepareStatement(sql);
 
-        // Set the values
+        
         ps.setString(1, data.getItemID());
         ps.setString(2, data.getItemName());
         ps.setString(3, data.getCategory());
         ps.setString(4, data.getItemLocation());
         ps.setInt(5, data.getQuantity());
 
-        // Handle image insertion
+         byte[] imageBytes = null; 
         if (data.getImage() != null) {
+           
             File imageFile = data.getImage().getFile();
+            
             if (imageFile != null && imageFile.exists()) {
                 ps.setBytes(6, getByteImage(imageFile));
             } else {
                 ps.setBytes(6, null);
                 System.out.println("Image file does not exist: " + imageFile.getAbsolutePath());
             }
+            
+            if (imageBytes == null) {
+            try {
+                InputStream defaultImageStream = getClass().getResourceAsStream("/inventocab/Icons/defaultImage.png");
+                if (defaultImageStream != null) {
+                    imageBytes = defaultImageStream.readAllBytes();
+                } else {
+                    System.out.println("Default image not found in resources.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         } else {
+             
             ps.setBytes(6, null);
         }
 
-        // Set remaining fields
+     
         ps.setString(7, data.getDescription());
         ps.setDate(8, (Date) data.getDateRequest());
         ps.setDate(9, (Date) data.getDateReceive());
 
-        // Execute the update
+       
         ps.executeUpdate();
     } catch (Exception e) {
         e.printStackTrace();
@@ -168,31 +185,30 @@ public List<ItemsInfoModel> getAll()throws SQLException {
 }
     public void updateItem(ItemsInfoModel data) {
     try {
-        // Create the SQL UPDATE statement
+      
         String sql = "UPDATE additem SET ItemName=?, Category=?, ItemLocation=?, Quantity=?, ItemImage=?, Description=?, DateRequested=?, DateReceive=? WHERE Item_ID=?";
         
-        // Prepare the statement
+     
         ps = prepareStatement(sql);
         
-        // Set the new values
+       
         ps.setString(1, data.getItemName());
         ps.setString(2, data.getCategory());
         ps.setString(3, data.getItemLocation());
         ps.setInt(4, data.getQuantity());
         
-        // Handle image update
+       
         if (data.getImage() != null) {
             File imageFile = data.getImage().getFile();
             if (imageFile != null && imageFile.exists()) {
-                ps.setBytes(5, getByteImage(imageFile));  // Set image bytes
+                ps.setBytes(5, getByteImage(imageFile)); 
             } else {
-                // If the image file does not exist, set it to null
+                
                 System.out.println("Image file does not exist: " + (imageFile != null ? imageFile.getAbsolutePath() : "null"));
                 ps.setBytes(5, null);
             }
         } else {
-            // If no new image is provided, we need to retain the existing image
-            // Fetch the existing image from the database
+           
             String existingImageSql = "SELECT ItemImage FROM additem WHERE Item_ID=?";
             PreparedStatement existingImagePs = prepareStatement(existingImageSql);
             existingImagePs.setString(1, data.getItemID());
@@ -200,29 +216,29 @@ public List<ItemsInfoModel> getAll()throws SQLException {
             if (rs.next()) {
                 Blob existingBlob = (Blob) rs.getBlob("ItemImage");
                 if (existingBlob != null) {
-                    ps.setBytes(5, existingBlob.getBytes(1, (int) existingBlob.length())); // Set existing image bytes
+                    ps.setBytes(5, existingBlob.getBytes(1, (int) existingBlob.length()));
                 } else {
-                    ps.setBytes(5, null); // If there's no existing image, set to null
+                    ps.setBytes(5, null);
                 }
             }
             rs.close();
             existingImagePs.close();
         }
 
-        // Set remaining fields
+       
         ps.setString(6, data.getDescription());
         ps.setDate(7, (Date) data.getDateRequest());
         ps.setDate(8, (Date) data.getDateReceive());
         
-        // Set the condition for which item to update using the item ID
+       
         ps.setString(9, data.getItemID());
 
-        // Execute the update
+        
         ps.executeUpdate();
     } catch (Exception e) {
         e.printStackTrace();
     } finally {
-        // Close the PreparedStatement if necessary
+       
         if (ps != null) {
             try {
                 ps.close();
@@ -244,16 +260,16 @@ public List<ItemsInfoModel> getAll()throws SQLException {
     }
      public void deleteItem(String itemId) {
     try {
-        // Create the SQL DELETE statement
+        
         String sql = "DELETE FROM additem WHERE Item_ID=?";
         
-        // Prepare the statement
+       
         ps = prepareStatement(sql);
         
-        // Set the condition for which item to delete using the item ID
+       
         ps.setString(1, itemId);
 
-        // Execute the delete
+      
         int rowsAffected = ps.executeUpdate();
         
         if (rowsAffected > 0) {
@@ -264,7 +280,7 @@ public List<ItemsInfoModel> getAll()throws SQLException {
     } catch (Exception e) {
         e.printStackTrace();
     } finally {
-        // Close the PreparedStatement and any other resources if necessary
+        
         if (ps != null) {
             try {
                 ps.close();
@@ -280,22 +296,22 @@ public List<ItemsInfoModel> getAll()throws SQLException {
     ResultSet rs = null;
 
     try {
-        // SQL query to search items by ItemName, Category, or ItemLocation including Blob image
+        
         String sql = "SELECT Item_ID, ItemName, Category, ItemLocation, Quantity, Description, DateRequested, DateReceive, ItemImage FROM additem WHERE (ItemName LIKE ? OR Category LIKE ? OR ItemLocation LIKE ?) AND DateDeleted IS NULL";
         
-        // Prepare the SQL statement
+       
         ps = getConnection().prepareStatement(sql);
         String searchPattern = "%" + search + "%";
-        ps.setString(1, searchPattern);  // Search by ItemName
-        ps.setString(2, searchPattern);  // Search by Category
-        ps.setString(3, searchPattern);  // Search by ItemLocation
+        ps.setString(1, searchPattern);  
+        ps.setString(2, searchPattern);  
+        ps.setString(3, searchPattern);  
 
-        // Execute the query
+       
         rs = ps.executeQuery();
         
-        // Iterate through the result set
+      
         while (rs.next()) {
-            // Create a new ItemsInfoModel object and populate it with data from the database
+            
             ItemsInfoModel item = new ItemsInfoModel();
             item.setItemID(rs.getString("Item_ID"));
             item.setItemName(rs.getString("ItemName"));
@@ -320,7 +336,7 @@ public List<ItemsInfoModel> getAll()throws SQLException {
             
             item.setDescription(rs.getString("Description"));
             
-            // Add the item to the list
+           
             itemsList.add(item);
         }
         return itemsList;
@@ -328,7 +344,7 @@ public List<ItemsInfoModel> getAll()throws SQLException {
     } catch (SQLException e) {
         e.printStackTrace();
     } finally {
-        // Close the ResultSet and PreparedStatement
+       
         if (rs != null) {
             rs.close();
         }
@@ -337,7 +353,7 @@ public List<ItemsInfoModel> getAll()throws SQLException {
         }
     }
 
-    return itemsList;  // Return the list of items
+    return itemsList; 
 }
     private PreparedStatement prepareStatement(String sql) {
         try {

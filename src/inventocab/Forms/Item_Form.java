@@ -12,9 +12,12 @@ import inventocab.Items.ItemPack;
 import inventocab.Items.ItemPackInventory;
 import inventocab.Items.ItemsBorrow;
 import inventocab.Models.ItemsInfoModel;
+import inventocab.Models.others.ItemImageModel;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -88,8 +91,8 @@ public class Item_Form extends javax.swing.JPanel {
         for (Component component : resposiveItem1.getComponents()) {
             ItemPack itemPack = (ItemPack) component;
             if (itemPack.getData().getItemID().equals(updatedItem.getItemID())) {
-                itemPack.setData(updatedItem); // Update the itemPack with new data
-                break; // Exit the loop once the item is found and updated
+                itemPack.setData(updatedItem); 
+                break; 
             }
         }
     }
@@ -264,9 +267,9 @@ public class Item_Form extends javax.swing.JPanel {
                 // Update action
                  ItemsInfoModel updatedData = popup.getData();
                 
-                // Check if the image is null, if so, retain the old image
+              
                 if (updatedData.getImage() == null) {
-                    updatedData.setImage(data.getImage()); // Retain old image
+                    updatedData.setImage(data.getImage());
                 }
                 control.updateItem(popup.getData()); 
                 Toast.show(this, Toast.Type.SUCCESS, "Item Successfully Updated"); 
@@ -336,8 +339,24 @@ public class Item_Form extends javax.swing.JPanel {
             System.out.println("Item ID: " + data.getItemID());
                     System.out.println("Item Name: " + data.getItemName());
                     System.out.println("Item Location: " + data.getItemLocation());
-                    System.out.println("Quantity: " + data.getQuantity()); // Check the quantity here
-                    System.out.println("Image: " + data.getImage().getIcon());
+                    System.out.println("Quantity: " + data.getQuantity()); 
+                    if (data.getImage() != null) {
+                        System.out.println("Image: " + data.getImage().getIcon());
+                    } else {
+                        System.out.println("Image: null, setting to default image.");
+                        try (InputStream defaultImageStream = getClass().getResourceAsStream("/inventocab/Icons/defaultImage.png")) {
+                            if (defaultImageStream != null) {
+                                byte[] defaultImageBytes = defaultImageStream.readAllBytes();
+                                ItemImageModel defaultImage = new ItemImageModel(defaultImageBytes);
+                                data.setImage(defaultImage); 
+                            } else {
+                                System.out.println("Default image resource not found.");
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     System.out.println("Date Receive: " + data.getDateReceive());
              control.addItem(popup.getData());
             Toast.show(this,Toast.Type.SUCCESS,"Items Successfully Added");
@@ -358,25 +377,25 @@ public class Item_Form extends javax.swing.JPanel {
         @Override
         public void itemClick(Component com, ItemsInfoModel itemsInfoModel) {
             updateItems(itemsInfoModel);
-            // You don't need to instantiate ItemController here again
+           
         }
 
     });
 
-    // Clear the current UI items
+    
      resposiveItem1.removeAll();
 
-    // Fetch search results from the controller
+    
     ItemController controller = new ItemController();
-    List<ItemsInfoModel> itemsInfoModels = (List<ItemsInfoModel>) controller.searchItems(search); // Assumes searchItem returns a list
+    List<ItemsInfoModel> itemsInfoModels = (List<ItemsInfoModel>) controller.searchItems(search); 
 
-    // Populate the UI with search results
+   
     for (ItemsInfoModel item : itemsInfoModels) {
         AddItems(item); 
-        // Corrected 'event' to 'item'
+       
     }
 
-    // Refresh the UI
+   
     
     repaint();
     revalidate();

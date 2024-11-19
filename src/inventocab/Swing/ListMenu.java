@@ -101,6 +101,6 @@ public class ListMenu <E extends Object> extends JList<E> {
     }
     @SuppressWarnings("unchecked")
      public void addItem(Model_Menu data) {
-        model.addElement((E) data); // Cast required for mixed usage
+        model.addElement((E) data); 
     }
 }

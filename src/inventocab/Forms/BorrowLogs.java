@@ -8,18 +8,17 @@ import inventocab.Controller.BorrowerController;
 import inventocab.Controller.ItemController;
 import inventocab.Controller.ReturnController;
 import inventocab.Event.EventItem;
-import inventocab.Event.EventItem1;
+
 import inventocab.Items.ItemLogsPop;
 import inventocab.Items.ItemPack;
-import inventocab.Items.returnpop;
+import inventocab.Items.ItemRecPopulate;
+
 import inventocab.Models.BorrowerInfoModel;
 import inventocab.Models.ItemsInfoModel;
-import inventocab.Models.ReturnInfoModel;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import java.util.logging.Level; // Import Level from java.util.logging
+import java.util.logging.Level; 
 import java.util.logging.Logger; 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -34,34 +33,42 @@ import raven.modal.component.SimpleModalBorder;
 import raven.modal.option.Location;
 import raven.modal.option.Option;
 
-/**
- *
- * @author Calyle
- */
+
 public  class BorrowLogs extends javax.swing.JPanel {
   
-    private PopItemForm popItemForm; // Declare instance variables
+    private PopItemForm popItemForm;
     private Item_Form itemform;
      private Set<String> seenBorrowerIds;
-    private EventItem1 event;
-    private ReturnInfoModel data;
+     private Form_3 form3;
+     private EventItem event;
+     
+   
+ 
     
    
-    public void setEvent(EventItem1 event) {
-        this.event = event;
-    }
+   
     public BorrowLogs()throws SQLException, Exception {
         initComponents();
          this.popItemForm = new PopItemForm();
         this.itemform = new Item_Form();
+        this.form3 = new Form_3();
          this.seenBorrowerIds = new HashSet<>(); 
         populateAddDataLogs(this.popItemForm, this.itemform);
+       
    
     }
     
+    public EventItem getEvent() {
+        return event;
+    }
+
+    public void setEvent(EventItem event) {
+        this.event = event;
+    }
     
     public void addborrowedData(BorrowerInfoModel data) throws Exception{
         ItemLogsPop item = new ItemLogsPop();
+        
        
         item.setData(data);
         item.returnbutton().addMouseListener(new MouseAdapter() {
@@ -69,6 +76,18 @@ public  class BorrowLogs extends javax.swing.JPanel {
             public void mouseClicked(MouseEvent e) {
                 ReturnController controler = new ReturnController();
               controler.returnBorrow( data);
+               
+                try {
+                    populateAddDataLogs(popItemForm, itemform);
+                } catch (Exception ex) {
+                    Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                try {
+                    Form_3 form = new Form_3();
+                    form.populateAddDataRec(popItemForm, itemform);
+                } catch (Exception ex) {
+                    Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 System.out.println("click");
             }
         
@@ -78,7 +97,15 @@ public  class BorrowLogs extends javax.swing.JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                   event.itemClick(item, data);
+                    try {
+                        Form_3 form = new Form_3();
+                        form.populateAddDataRec(popItemForm, itemform);
+                        
+                      
+                        
+                    } catch (Exception ex) {
+                        Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 
                 
@@ -113,10 +140,10 @@ public  class BorrowLogs extends javax.swing.JPanel {
     }
 
   private boolean isUniqueBorrowerId(String borrowerId) throws SQLException {
-    // Assuming you have a method in your BorrowerController to count borrower IDs
+   
     BorrowerController controller = new BorrowerController(popItemForm, itemform);
     int count = controller.countBorrowerId(borrowerId);
-    return count == 1; // Return true if there's exactly one borrowerId
+    return count == 1; 
 }
   
 
@@ -179,32 +206,25 @@ public  class BorrowLogs extends javax.swing.JPanel {
 
 public void populateAddDataLogs(PopItemForm popItemForm, Item_Form itemform) throws SQLException, Exception {
     
-    this.setEvent(new EventItem1(){
-        public void itemClick(Component Comp, BorrowerInfoModel data){
-            System.out.println("itemclick");
-        }
+   
 
-       
-    });
         responsiveItem5.removeAll();
     seenBorrowerIds.clear(); 
 
     BorrowerController controller = new BorrowerController(popItemForm, itemform);
-    List<BorrowerInfoModel> allBorrowers = controller.getBorrower(); // Assume this method retrieves all borrowers
+    List<BorrowerInfoModel> allBorrowers = controller.getBorrower(); 
 
     Set<String> uniqueBorrowerIds = new HashSet<>();
     List<BorrowerInfoModel> uniqueBorrowers = new ArrayList<>();
 
-    for (BorrowerInfoModel borrower : allBorrowers) {
-        // Add borrowerId to the Set and check if it was added successfully
-        if (uniqueBorrowerIds.add(borrower.getBorrowerId())) {
-            // If added, it means this borrowerId is unique, so add the borrower to the list
+    for (BorrowerInfoModel borrower : allBorrowers) {   
+        if (borrower.getDateReturn() == null &&  uniqueBorrowerIds.add(borrower.getBorrowerId())) {
             uniqueBorrowers.add(borrower);
         }
     }
 
     for (BorrowerInfoModel borrowerInfoModel : uniqueBorrowers) {
-        addborrowedData(borrowerInfoModel); // Populate the data for this borrower
+        addborrowedData(borrowerInfoModel); 
     }
 
     repaint();
@@ -212,12 +232,12 @@ public void populateAddDataLogs(PopItemForm popItemForm, Item_Form itemform) thr
     }
     private void searchTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextKeyReleased
       try {
-        // Call the SearchEvent method with the text from the searchText field
+       
         SearchEvent(searchText.getText(), popItemForm, itemform);
     } catch (ParseException ex) {
-        Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex); // Change to BorrowLogs
+        Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex); 
     } catch (SQLException ex) {
-        Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex); // Change to BorrowLogs
+        Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex); 
     }   catch (Exception ex) {
             Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -227,20 +247,20 @@ private void SearchEvent(String search,PopItemForm popItemForm,Item_Form itemfor
 
    responsiveItem5.removeAll();
   seenBorrowerIds.clear();
-    // Create an instance of the BorrowerController
+   
     BorrowerController controller = new BorrowerController(popItemForm, itemform);
     
-    // Fetch the borrowed items based on the search query
-    List<BorrowerInfoModel> borrowedItems = controller.searchBorrowedItems(search); // No need for casting if the method returns List<BorrowerInfoModel>
+   
+    List<BorrowerInfoModel> borrowedItems = controller.searchBorrowedItems(search); 
 
-    // Populate the UI with search results
+    
     for (BorrowerInfoModel item : borrowedItems) {
-        PopulateBorrowData(item); // Populate the UI with the borrowed item data
+        PopulateBorrowData(item); 
     }
 
-    // Refresh the UI
-    responsiveItem5.revalidate(); // Revalidate the component
-    responsiveItem5.repaint(); // Repaint the component
+    
+    responsiveItem5.revalidate(); 
+    responsiveItem5.repaint(); 
 }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -7,10 +7,8 @@ package inventocab.Controller;
 import inventocab.Models.UserInfoModel;
 import java.sql.SQLException;
 
-/**
- *
- * @author Calyle
- */
+
+
 public class UserController {
     AddUserController DAO;
     public UserController() {

@@ -8,10 +8,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import raven.modal.demo.layout.ResponsiveLayout;
 
-/**
- *
- * @author Calyle
- */
+
 public class ResposiveItem2 extends JPanel{
 
     public ResposiveItem2() {

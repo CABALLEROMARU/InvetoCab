@@ -30,9 +30,7 @@ public class ItemPackInventory extends javax.swing.JPanel {
         return Selected;
     }
 
-    /**
-     * @param Selected the Selected to set
-     */
+   
     public void setSelected(boolean Selected) {
         this.Selected = Selected;
         repaint();
@@ -43,39 +41,17 @@ public class ItemPackInventory extends javax.swing.JPanel {
         return data;
     }
 
-//    public void setData(ItemsInfoModel data) {
-//        this.data = data;
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//        String dateReqStr = dateFormat.format(data.getDateRequest());
-//         String dateRecStr = dateFormat.format(data.getDateReceive());
-//        String qty = Integer.toString(data.getQuantity());
-//        itemID.setText(data.getItemID());
-//        itemLoc.setText(data.getItemLocation());
-//        itemName.setText(data.getItemName());
-//        quantity.setText(qty);
-//        itemLoc.setText(data.getItemLocation());
-//        category.setText(data.getCategory());
-//        dateReq.setText(dateRecStr);
-//        dateRec.setText(dateRecStr);
-//       if (data.getImage() != null && data.getImage().getIcon() != null) {
-//        itemImg.setImage(data.getImage().getIcon());
-//    } else {
-//        // Handle the case where image is null, e.g., set a default image
-//        itemImg.setImage(new ImageIcon(getClass().getResource("/inventocab/Icons/defaultImage.png")));
-//    }
-//       
-//    }
+
     public void setData(ItemsInfoModel data) {
     this.data = data;
 
-    // Initialize the date format
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    // Check if the dateRequest is null and format accordingly
-    String dateReqStr = (data.getDateRequest() != null) ? dateFormat.format(data.getDateRequest()) : "N/A"; // Default value for null
-    String dateRecStr = (data.getDateReceive() != null) ? dateFormat.format(data.getDateReceive()) : "N/A"; // Default value for null
+   
+    String dateReqStr = (data.getDateRequest() != null) ? dateFormat.format(data.getDateRequest()) : "N/A"; 
+    String dateRecStr = (data.getDateReceive() != null) ? dateFormat.format(data.getDateReceive()) : "N/A"; 
 
-    // Set the text fields
+  
     itemID.setText(data.getItemID());
     itemLoc.setText(data.getItemLocation());
     itemName.setText(data.getItemName());
@@ -84,11 +60,11 @@ public class ItemPackInventory extends javax.swing.JPanel {
     dateReq.setText(dateReqStr);
     dateRec.setText(dateRecStr);
 
-    // Handle the image
+   
     if (data.getImage() != null && data.getImage().getIcon() != null) {
         itemImg.setImage(data.getImage().getIcon());
     } else {
-        // Set a default image if the image is null
+     
         itemImg.setImage(new ImageIcon(getClass().getResource("/inventocab/Icons/defaultImage.png")));
     }
 }

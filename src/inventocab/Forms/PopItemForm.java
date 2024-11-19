@@ -47,9 +47,9 @@ import raven.modal.option.Option;
 
 
 public class PopItemForm extends javax.swing.JPanel {
-  private javax.swing.JTextField itemsId; // Declare text fields
-    private javax.swing.JTextField itemsName; // Item name text field
-    private javax.swing.JTextField jTextField10; // Quantity text field
+  private javax.swing.JTextField itemsId;
+    private javax.swing.JTextField itemsName; 
+    private javax.swing.JTextField jTextField10; 
      private ItemsBorrow borrowInstance;
     private Item_Form itemForm; 
     
@@ -68,29 +68,29 @@ public BorrowerInfoModel getData() {
     try {
         Date dateRequestedData = dateRequested.isDateSelected() ? Date.valueOf(dateRequested.getSelectedDate()) : null;
 
-        // Debugging: Log the values of the inputs
+        
         String borrowerId = BorId.getText();
         String borrowerNameText = borrowerName.getText();
         String lenderNameText = lenderername.getText();
-        String allItemsID = allitemsID.getText();// Ensure this is the correct JTextField reference
+        String allItemsID = allitemsID.getText();
 
         System.out.println("Borrower ID: " + borrowerId);
         System.out.println("Borrower Name: " + borrowerNameText);
-        System.out.println("Lender Name: " + lenderNameText); // Log the lender name
+        System.out.println("Lender Name: " + lenderNameText); 
 
-        // Check for empty values
+       
         if (borrowerId.isEmpty() || borrowerNameText.isEmpty() || lenderNameText.isEmpty()) {
             JOptionPane.showMessageDialog(null, "All fields must be filled out.", "Error", JOptionPane.ERROR_MESSAGE);
-            return null; // Return null if any field is empty
+            return null;
         }
 
-        // Make sure cartList is initialized and not null
+       
         if (cartList == null || cartList.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Cart list cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
-            return null; // Return null if cartList is invalid
+            return null; 
         }
 
-        // Return a new BorrowerInfoModel
+        
         return new BorrowerInfoModel(borrowerId, borrowerNameText, lenderNameText, cartList, dateRequestedData,allItemsID);
     } catch (Exception e) {
         e.printStackTrace();
@@ -156,19 +156,19 @@ public BorrowerInfoModel getData() {
             if (newQuantity <= i.getData().getQuantity()) {
                 i.getData().setQuantity(newQuantity);
                 i.setQuantity(newQuantity);
-                // Update the quantity field in the ItemsBorrow component
+               
                 for (Component borrowCom : resposiveItem2.getComponents()) {
                     ItemsBorrow borrow = (ItemsBorrow) borrowCom;
                     if (borrow.getData().getItemID().equals(item.getItemID())) {
                         System.out.println("Found ItemsBorrow component for item ID: " + item.getItemID());
                         borrow.updateQuantityField(newQuantity);
                     } else {
-                        // Update the quantity of the existing items
+                        
                         borrow.updateQuantityField(borrow.getData().getQuantity());
                     }
                 }
             } else {
-                // Do nothing if the new quantity exceeds the available quantity
+              
             }
         }
     }
@@ -180,25 +180,22 @@ public BorrowerInfoModel getData() {
     ItemsBorrow cartItem = new ItemsBorrow();
     cartItem.setData(data);
     
-    // Check if the item is already in the cart
+    
     int cartIndex = cartList.indexOf(data);
     
     if (cartIndex == -1) {
-        // If the item is not in the cart, set its quantity to 1
-        data.setCartQuantity(1); // Set the quantity to 1
-        cartList.add(data); // Add the item to the cart list
+       
+        data.setCartQuantity(1); 
+        cartList.add(data); 
     } else {
-        // If the item is already in the cart, you can choose to update the quantity
-        // For example, you might want to increase the quantity instead of resetting it
-//        int newQty = cartList.get(cartIndex).getCartQuantity() + 1; // Increase quantity
-//        data.setCartQuantity(newQty);
-        cartList.set(cartIndex, data); // Update the cart list
+       
+        cartList.set(cartIndex, data); 
     }
 
-    // Set the quantity in the cart item UI
+    
     cartItem.setQtyData(data.getCartQuantity());
 
-    // Add mouse listeners for the cart item
+   
     cartItem.getRemovebtn().addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -216,7 +213,7 @@ public BorrowerInfoModel getData() {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (cartIndex != -1) {
-                int newQty = data.getCartQuantity() + 1; // Increase quantity
+                int newQty = data.getCartQuantity() + 1; 
                 data.setCartQuantity(newQty);
                 cartItem.setQtyData(newQty);
                 cartList.set(cartIndex, data);
@@ -229,7 +226,7 @@ public BorrowerInfoModel getData() {
         public void mouseClicked(MouseEvent e) {
             if (cartIndex != -1) {
                 if (data.getCartQuantity() > 1) {
-                    int newQty = data.getCartQuantity() - 1; // Decrease quantity
+                    int newQty = data.getCartQuantity() - 1; 
                     data.setCartQuantity(newQty);
                     cartItem.setQtyData(newQty);
                     cartList.set(cartIndex, data);
@@ -243,7 +240,7 @@ public BorrowerInfoModel getData() {
         public void mouseClicked(MouseEvent e) {
             if (SwingUtilities.isLeftMouseButton(e)) {
               
-                cartEvent.itemClick(cartItem, data);
+                
             }
         }
     });
@@ -252,71 +249,7 @@ public BorrowerInfoModel getData() {
     repaint();
     revalidate();
 }
-//  
-//   public void addCartData(ItemsInfoModel data){
-//       
-//      
-//        ItemsBorrow cartItem = new ItemsBorrow();
-//        cartItem.setData(data);
-//        int cartIndex = cartList.indexOf(data);
-//         
-//        ItemsInfoModel datamodel = cartList.get(cartIndex);
-//       
-//        cartItem.getRemovebtn().addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//               int cartIndexdata = cartList.indexOf(data);
-//                if (cartIndexdata != -1) {
-//                    cartList.remove(cartIndexdata);
-//                    resposiveItem2.remove(cartItem);
-//                      
-//                    repaint();
-//                    revalidate();
-//                }
-//            }
-//        
-//        
-//        });
-//        
-//        cartItem.getAddbtn().addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                if (cartIndex != -1) {
-//                   
-//                      int newQty = datamodel.getCartQuantity()+ 1;
-//                      datamodel.setCartQuantity(newQty);
-//                      cartItem.setQtyData(newQty);
-//                      cartList.set(cartIndex, datamodel);
-//                }    
-//            }
-//        });
-//            cartItem.getMinusbtn().addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                if (cartIndex != -1) {
-//                    if (datamodel.getCartQuantity()>1) {
-//                      int newQty = datamodel.getCartQuantity()- 1;
-//                      datamodel.setCartQuantity(newQty);
-//                      cartItem.setQtyData(newQty);
-//                      cartList.set(cartIndex, datamodel);  
-//                    }     
-//                }           
-//            }
-//        });
-//        
-//        cartItem.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                if (SwingUtilities.isLeftMouseButton(e)) {
-//                    cartEvent.itemClick(cartItem, data);
-//                }
-//            }  
-//            
-//        });
-//        resposiveItem2.add(cartItem);
-//        repaint();
-//        revalidate();
-//    }
+
    
 public void addBorrow(ItemsInfoModel data) throws SQLException {
    
@@ -332,7 +265,7 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
     event.itemClick(itemsborrow, data);
     itemsborrow.setEnabled(false);
 } else {
-    // You can show a message to the user that the item has already been added
+   
     JOptionPane.showMessageDialog(null, "Item has already been added to the cart");
 }        
             }else if (cartList.stream().anyMatch(item -> item.getItemID().equals(data.getItemID()))){
@@ -359,11 +292,11 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
         resposiveItem2.add(itemsborrow);
     }
 
-    // Update the quantity of the existing items
+   
     for (Component com : resposiveItem2.getComponents()) {
         ItemsBorrow borrow = (ItemsBorrow) com;
         if (!borrow.getData().getItemID().equals(data.getItemID())) {
-            // Update the quantity of the existing item
+          
             borrow.updateQuantityField(borrow.getData().getQuantity());
         }
     }
@@ -377,9 +310,9 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
         for (Component com : resposiveItem21.getComponents()) {
             ItemPackInventory itemPackInventory = (ItemPackInventory) com;
             if (itemPackInventory.getData().getItemID().equals(itemId)) {
-                // Assuming ItemPackInventory has a method to update the displayed quantity
+               
                 itemPackInventory.setQuantity(itemPackInventory.getData().getQuantity());
-                break; // Exit the loop once the item is found and updated
+                break; 
             }
         }
         repaint();
@@ -436,7 +369,7 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
    
     resposiveItem2.remove(item);
     
-    // Update the UI
+   
     revalidate();
     repaint();
 }
@@ -532,13 +465,13 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
                     .addComponent(borrowerName, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
                     .addComponent(dateBor))
                 .addContainerGap(16, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(allitemsID)
-                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(BorId, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(allitemsID, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -558,7 +491,7 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
                 .addComponent(BorId, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(allitemsID))
+                .addComponent(allitemsID, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jScrollPane2.setViewportView(resposiveItem2);
@@ -570,13 +503,13 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(panelGradient1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane2)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(114, 114, 114)
                         .addComponent(cancel, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(borrowBut, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addComponent(borrowBut, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -694,15 +627,15 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
  
  
 try {
-    // Get data for the borrower
-    BorrowerInfoModel borrowerInfo = getData(); // Retrieve data using getData method
+    
+    BorrowerInfoModel borrowerInfo = getData(); 
 
-    // Check if the data is valid (not null)
+   
     if (borrowerInfo != null && !borrowerInfo.getCartList().isEmpty()) {
-        // Convert the cartList (List<ItemsInfoModel>) to a List<BorrowerInfoModel>
+     
         List<BorrowerInfoModel> borrowerList = new ArrayList<>();
         for (ItemsInfoModel item : borrowerInfo.getCartList()) {
-            // Create a new BorrowerInfoModel for each item
+          
             BorrowerInfoModel newBorrower = new BorrowerInfoModel(
                 borrowerInfo.getBorrowerId(),
                 borrowerInfo.getBorrowerName(),
@@ -723,7 +656,7 @@ try {
             ItemLogsPop itemLogsPop = new ItemLogsPop();
            
         if (itemForm != null) {
-                // Assuming you want to refresh based on the cartList
+               
                 itemForm.refreshItemQuantities(borrowerInfo.getCartList());
             }
       
@@ -732,8 +665,8 @@ try {
         
        
       
-        // Show success message
-        JOptionPane.showMessageDialog(null, "Borrow data has been added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+      
+        JOptionPane.showMessageDialog(null, "Your borrowed items is processing " + "\n" + "Please Comeback after 3 days to receive the items", "Success", JOptionPane.INFORMATION_MESSAGE);
         
         
         
@@ -742,19 +675,19 @@ try {
         BorId.setText(newRandomID);
         allitemsID.setText(newRandomID);
         
-         borrowerName.setText(""); // Clear borrowerName field
+         borrowerName.setText(""); 
         lenderername.setText("");   
         
         cartList.clear();
         
-            populateCart(); // Refresh the cart UI
+            populateCart(); 
     } else {
-        // Show an error message if the data is invalid
+       
         JOptionPane.showMessageDialog(null, "Failed to add borrow data. Please check the input.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 } catch (Exception e) {
     e.printStackTrace();
-    // Display an error message if an exception occurs
+   
     JOptionPane.showMessageDialog(null, "An error occurred while adding borrow data.", "Error", JOptionPane.ERROR_MESSAGE);
 }
 
@@ -828,7 +761,7 @@ try {
     ModalDialog.showModal(this, new SimpleModalBorder(popup, "Update Item", options, 
         (controller, action) -> {
             if (action == SimpleModalBorder.OK_OPTION) { 
-                // Update action
+               
                 control.updateItem(popup.getData()); 
                 Toast.show(this, Toast.Type.SUCCESS, "Item Successfully Updated"); 
 
@@ -900,20 +833,20 @@ try {
         
     });
 
-    // Clear the current UI items
+  
      resposiveItem21.removeAll();
 
-    // Fetch search results from the controller
+   
     ItemController controller = new ItemController();
-    List<ItemsInfoModel> itemsInfoModels = (List<ItemsInfoModel>) controller.searchItems(search); // Assumes searchItem returns a list
+    List<ItemsInfoModel> itemsInfoModels = (List<ItemsInfoModel>) controller.searchItems(search); 
 
-    // Populate the UI with search results
+  
     for (ItemsInfoModel item : itemsInfoModels) {
         AddItems(item); 
-        // Corrected 'event' to 'item'
+      
     }
 
-    // Refresh the UI
+  
     
     repaint();
     revalidate();
@@ -967,7 +900,7 @@ private void populateCart() throws SQLException{
     resposiveItem2.removeAll();
     
     for (ItemsInfoModel itemsInfoModel : cartList) {
-//       addBorrow(itemsInfoModel);
+
         addCartData(itemsInfoModel);
     }
     repaint();

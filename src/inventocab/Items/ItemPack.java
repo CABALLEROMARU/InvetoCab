@@ -22,16 +22,12 @@ import raven.modal.option.Option;
 
 public class ItemPack extends javax.swing.JPanel {
 
-    /**
-     * @return the Selected
-     */
+   
     public boolean isSelected() {
         return Selected;
     }
 
-    /**
-     * @param Selected the Selected to set
-     */
+   
     public void setSelected(boolean Selected) {
         this.Selected = Selected;
         repaint();
@@ -46,24 +42,24 @@ public class ItemPack extends javax.swing.JPanel {
     this.data = data;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    // Check if the dateRequest is null and format accordingly
-    String dateReqStr = (data.getDateRequest() != null) ? dateFormat.format(data.getDateRequest()) : "N/A"; // Default value for null
-    String dateRecStr = (data.getDateReceive() != null) ? dateFormat.format(data.getDateReceive()) : "N/A"; // Default value for null
+  
+    String dateReqStr = (data.getDateRequest() != null) ? dateFormat.format(data.getDateRequest()) : "N/A"; 
+    String dateRecStr = (data.getDateReceive() != null) ? dateFormat.format(data.getDateReceive()) : "N/A"; 
 
-    // Set the text fields
+  
     itemID.setText(data.getItemID());
     itemLoc.setText(data.getItemLocation());
     itemName.setText(data.getItemName());
-    itemqty.setText(String.valueOf(data.getQuantity())); // Assuming itemqty is the correct variable
+    itemqty.setText(String.valueOf(data.getQuantity())); 
     category.setText(data.getCategory());
     dateReq.setText(dateReqStr);
     dateRec.setText(dateRecStr);
 
-    // Handle the image
+   
     if (data.getImage() != null && data.getImage().getIcon() != null) {
         itemImg.setImage(data.getImage().getIcon());
     } else {
-        // Set a default image if the image is null
+        
         itemImg.setImage(new ImageIcon(getClass().getResource("/inventocab/Icons/defaultImage.png")));
     }
 }

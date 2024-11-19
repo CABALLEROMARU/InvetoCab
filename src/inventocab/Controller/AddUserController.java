@@ -15,10 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 
-/**
- *
- * @author Calyle
- */
+
 public class AddUserController {
     private DatabaseConnection databaseConnection;
     public AddUserController(){
