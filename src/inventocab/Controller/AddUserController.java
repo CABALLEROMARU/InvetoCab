@@ -6,15 +6,12 @@ package inventocab.Controller;
 
 import java.sql.Connection;
 import inventocab.JDBC.DatabaseConnection;
-import inventocab.Models.UserInfoModel;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import inventocab.Models.UserInfoModel;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-
-
 
 public class AddUserController {
     private DatabaseConnection databaseConnection;

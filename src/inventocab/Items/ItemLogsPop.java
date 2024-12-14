@@ -1,41 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package inventocab.Items;
 
-import inventocab.Controller.BorrowerController;
-import inventocab.Controller.ItemController;
 import inventocab.Controller.ReturnController;
 import inventocab.Event.EventItem;
-import inventocab.Forms.BorrowLogs;
 import inventocab.Forms.Item_Form;
 import inventocab.Forms.PopItemForm;
-import inventocab.Forms.addItemspop;
 import inventocab.Models.BorrowerInfoModel;
 import inventocab.Models.ItemsInfoModel;
-import java.awt.Component;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import raven.datetime.component.date.DatePicker;
-import raven.modal.ModalDialog;
-import raven.modal.Toast;
-import raven.modal.component.SimpleModalBorder;
-import raven.modal.demo.simple.SimpleMessageModal;
-import raven.modal.listener.ModalCallback;
-import raven.modal.listener.ModalController;
-import raven.modal.option.Location;
-import raven.modal.option.Option;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.sql.SQLException;
 
 
 public class ItemLogsPop extends javax.swing.JPanel {
@@ -54,30 +38,49 @@ public class ItemLogsPop extends javax.swing.JPanel {
         this.event = event;
     }
   
-  public String getDateReturned() {
-  
-    return dateRet.getText().trim();
+
+public BorrowerInfoModel getReturnData() {
+    try {
+        // Retrieve the selected return status from the JComboBox
+        String returnStatusText = (String) returnstatus.getSelectedItem();
+        
+        // Retrieve remarks from the JTextField
+        String remarksText = remarks.getText();
+        
+        // Retrieve other necessary data from the UI components
+        String borrowerId = borId.getText();
+        String borrowerNameText = borName.getText();
+        String lenderNameText = lenName.getText();
+        
+        // Ensure cartList is populated
+        if (cartList == null || cartList.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Cart list cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        // Create and return the BorrowerInfoModel
+        return new BorrowerInfoModel(borrowerId, borrowerNameText, lenderNameText, null, null, null, returnStatusText, remarksText, "", cartList);
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "An error occurred while retrieving data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        return null;
+    }
 }
   
-
- 
  public void setData(BorrowerInfoModel data) {
     this.data = data;
 
- 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-    
-    String dateReqStr = (data.getDateRequest() != null) ? dateFormat.format(data.getDateRequest()) : "N/A"; // Default value for null
-
-    
+    // Populate UI components with data
     borId.setText(data.getBorrowerId());
     borName.setText(data.getBorrowerName());
     lenName.setText(data.getLenderName());
-    dateBOR.setText(dateReqStr);
+    // Populate other fields...
 
-  
+    // Populate the cartList
     List<ItemsInfoModel> cartList = data.getCartList();
+    this.cartList = cartList; // Ensure this is set correctly
+
+    // Populate the listItemField with item details
     if (cartList != null && !cartList.isEmpty()) {
         StringBuilder itemsText = new StringBuilder();
         for (ItemsInfoModel item : cartList) {
@@ -91,7 +94,9 @@ public class ItemLogsPop extends javax.swing.JPanel {
         listItemField.setText("No items in the list");
     }
 }
-
+ 
+ private DatePicker dateRequested = new DatePicker();
+       private DatePicker dateReleased = new DatePicker();
      private DatePicker dateReturned = new DatePicker();
     public ItemLogsPop() throws SQLException, Exception {
         initComponents();
@@ -102,17 +107,10 @@ public class ItemLogsPop extends javax.swing.JPanel {
         String Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         String randonID = generateRandomID(Alphabet, 6);
         borId.setText(randonID);
-          
         datePicker1.setCloseAfterSelected(true);
-        datePicker1.setEditor(dateRet);
-        
-          dateReturned.setEditor(dateRet);
-    
-    dateReturned.setCloseAfterSelected(true);
-    
-   
-    dateReturned.setDateFormat("yyyy-MM-dd");
-    dateReturned.now();
+        dateReturned.setCloseAfterSelected(true);
+        dateReturned.setDateFormat("yyyy-MM-dd");
+        dateReturned.now();
     }
     
      private static String generateRandomID(String candidateChar,int length){
@@ -125,7 +123,6 @@ public class ItemLogsPop extends javax.swing.JPanel {
         return sb.toString();
         
     }
-    
      
     public JButton returnbutton(){
         return returnbutton;
@@ -142,25 +139,30 @@ public class ItemLogsPop extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         borName = new javax.swing.JLabel();
         lenName = new javax.swing.JLabel();
         dateBOR = new javax.swing.JLabel();
-        dateRet = new javax.swing.JFormattedTextField();
         returnbutton = new javax.swing.JButton();
         borId = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         listItemField = new javax.swing.JTextPane();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        daterel = new javax.swing.JLabel();
+        status = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        returnstatus = new javax.swing.JComboBox<>();
+        jLabel7 = new javax.swing.JLabel();
+        remarks = new javax.swing.JTextField();
 
+        setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel1.setText("Borrower's Name:");
 
-        jLabel2.setText("Lenderer's Name:");
+        jLabel2.setText("Custodian's Name:");
 
-        jLabel3.setText("Date Borrowed:");
-
-        jLabel4.setText("Date Return:");
+        jLabel3.setText("Date Filed:");
 
         borName.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         borName.setText("jLabel5");
@@ -182,7 +184,24 @@ public class ItemLogsPop extends javax.swing.JPanel {
 
         borId.setText("jLabel8");
 
+        listItemField.setEditable(false);
         jScrollPane1.setViewportView(listItemField);
+
+        jLabel4.setText("Date Release:");
+
+        jLabel5.setText("Borrowed Item Status:");
+
+        daterel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        daterel.setText("jLabel6");
+
+        status.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        status.setText("jLabel7");
+
+        jLabel6.setText("Item Return Status:");
+
+        returnstatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1- Good", "2- Replacement", "3- Unavailable", "4- Loss", " " }));
+
+        jLabel7.setText("Remarks:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -191,25 +210,50 @@ public class ItemLogsPop extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(borId, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel5))
+                                .addGap(47, 47, 47)))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel6)
+                            .addGap(63, 63, 63)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addGap(115, 115, 115)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(dateBOR, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(dateRet, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lenName, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(borName, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(29, 29, 29)
-                        .addComponent(borId, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(182, 182, 182)
+                            .addComponent(dateBOR, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(borName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(2, 2, 2))
+                                    .addComponent(lenName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(36, 36, 36)))
+                        .addGap(182, 182, 182))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(daterel)
+                            .addComponent(status)
+                            .addComponent(returnstatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(remarks))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addGap(113, 113, 113)
                 .addComponent(returnbutton)
-                .addGap(77, 77, 77))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -223,26 +267,65 @@ public class ItemLogsPop extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(lenName))
-                .addGap(12, 12, 12)
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(dateBOR))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(dateRet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(62, Short.MAX_VALUE))
+                    .addComponent(daterel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(status))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(returnstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(remarks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(returnbutton, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(returnbutton))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void returnbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnbuttonActionPerformed
-    
+     // Get the return data from the item logs pop
+    BorrowerInfoModel returnData = getReturnData(); // Assuming you have this method in ItemLogsPop
+
+    if (returnData != null) {
+        // Validate remarks
+        String remarksText = remarks.getText().trim(); // Get the trimmed text from the remarks field
+        if (remarksText.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Remarks field must contain data.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; // Exit if remarks are empty
+        }
+
+        // Proceed with the return operation
+        ReturnController controller = new ReturnController();
+        controller.returnBorrow(returnData);
+
+        // Optionally, refresh the UI or perform other actions after the return
+        try {
+            // Refresh the logs after returning
+            // For example:
+            // BorrowLogs.populateAddDataLogs(popItemForm, itemform);
+        } catch (Exception ex) {
+            Logger.getLogger(ItemLogsPop.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    } else {
+        JOptionPane.showMessageDialog(null, "Failed to retrieve return data.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_returnbuttonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -250,14 +333,20 @@ public class ItemLogsPop extends javax.swing.JPanel {
     private javax.swing.JLabel borName;
     private javax.swing.JLabel dateBOR;
     private raven.datetime.component.date.DatePicker datePicker1;
-    private javax.swing.JFormattedTextField dateRet;
+    private javax.swing.JLabel daterel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lenName;
     private javax.swing.JTextPane listItemField;
+    private javax.swing.JTextField remarks;
     private javax.swing.JButton returnbutton;
+    private javax.swing.JComboBox<String> returnstatus;
+    private javax.swing.JLabel status;
     // End of variables declaration//GEN-END:variables
 }

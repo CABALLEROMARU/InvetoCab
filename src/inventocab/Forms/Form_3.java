@@ -6,16 +6,8 @@ package inventocab.Forms;
 
 
 import inventocab.Controller.BorrowerController;
-import inventocab.Controller.ItemController;
-import inventocab.Event.EventItem;
-import inventocab.Items.ItemLogsPop;
-import inventocab.Items.ItemPack;
 import inventocab.Items.ItemRecPopulate;
 import inventocab.Models.BorrowerInfoModel;
-import inventocab.Models.ItemsInfoModel;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import java.util.logging.Level; 
 import java.util.logging.Logger; 
@@ -25,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.swing.SwingUtilities;
 
 
 public class Form_3 extends javax.swing.JPanel {
@@ -43,9 +34,7 @@ public class Form_3 extends javax.swing.JPanel {
          this.seenBorrowerIds = new HashSet<>(); 
         populateAddDataRec(this.popItemForm, this.itemform);
     }
-
-    public void PopulateBorrowData(BorrowerInfoModel data) throws SQLException, Exception {
-       
+    public void PopulateBorrowData(BorrowerInfoModel data) throws SQLException, Exception {      
      ItemRecPopulate logs = new ItemRecPopulate();
         logs.setData(data);
         responsiveItem6.add(logs);
@@ -145,13 +134,11 @@ public class Form_3 extends javax.swing.JPanel {
     }//GEN-LAST:event_searchTextKeyReleased
 private void SearchEvent(String search,PopItemForm popItemForm,Item_Form itemform) throws ParseException, SQLException, Exception {
     
-
    responsiveItem6.removeAll();
   seenBorrowerIds.clear();
     
     BorrowerController controller = new BorrowerController(popItemForm, itemform);
     
-  
     List<BorrowerInfoModel> borrowedItems = controller.searchBorrowedItems(search); 
 
    

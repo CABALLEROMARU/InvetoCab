@@ -5,12 +5,9 @@
 package inventocab.Forms;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import inventocab.Components.Header;
 import inventocab.Controller.ItemController;
 import inventocab.Event.EventItem;
 import inventocab.Items.ItemPack;
-import inventocab.Items.ItemPackInventory;
-import inventocab.Items.ItemsBorrow;
 import inventocab.Models.ItemsInfoModel;
 import inventocab.Models.others.ItemImageModel;
 import java.awt.Component;
@@ -20,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +35,6 @@ import raven.modal.option.Option;
 
 public class Item_Form extends javax.swing.JPanel {
 
-  
     public EventItem getEvent() {
         return event;
     }
@@ -68,18 +63,7 @@ public class Item_Form extends javax.swing.JPanel {
                 
                 
             }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                super.mouseEntered(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                super.mouseExited(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
-            }
-        
-        
+                
         });
         resposiveItem1.add(itemPack);
         repaint();
@@ -111,10 +95,7 @@ public class Item_Form extends javax.swing.JPanel {
     private void init(){
           panel.putClientProperty(FlatClientProperties.STYLE, ""
                 + "arc:25;"
-                + "background:$Table.background");
-    
-       
-        
+                + "background:$Table.background");      
       
     }
     
@@ -336,10 +317,7 @@ public class Item_Form extends javax.swing.JPanel {
     (controller,action)->{
         if (action==SimpleModalBorder.YES_OPTION) {
              ItemsInfoModel data = popup.getData();
-            System.out.println("Item ID: " + data.getItemID());
-                    System.out.println("Item Name: " + data.getItemName());
-                    System.out.println("Item Location: " + data.getItemLocation());
-                    System.out.println("Quantity: " + data.getQuantity()); 
+            
                     if (data.getImage() != null) {
                         System.out.println("Image: " + data.getImage().getIcon());
                     } else {

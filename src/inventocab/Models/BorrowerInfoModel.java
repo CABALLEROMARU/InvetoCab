@@ -4,12 +4,67 @@
  */
 package inventocab.Models;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
 public class BorrowerInfoModel {
+
+    /**
+     * @return the Remarks
+     */
+    public String getRemarks() {
+        return Remarks;
+    }
+
+    /**
+     * @param Remarks the Remarks to set
+     */
+    public void setRemarks(String Remarks) {
+        this.Remarks = Remarks;
+    }
+
+    /**
+     * @return the ReturnStatus
+     */
+    public String getReturnStatus() {
+        return ReturnStatus;
+    }
+
+    /**
+     * @param ReturnStatus the ReturnStatus to set
+     */
+    public void setReturnStatus(String ReturnStatus) {
+        this.ReturnStatus = ReturnStatus;
+    }
+
+    /**
+     * @return the DateRelease
+     */
+    public Date getDateRelease() {
+        return daterelease;
+    }
+
+    /**
+     * @param DateRelease the DateRelease to set
+     */
+    public void setDateRelease(Date DateRelease) {
+        this.daterelease = DateRelease;
+    }
+
+    /**
+     * @return the Status
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * @param Status the Status to set
+     */
+    public void setStatus(String Status) {
+        this.status = Status;
+    }
 
     /**
      * @return the DateReturn
@@ -92,26 +147,39 @@ public List<ItemsInfoModel> getCartList() {
     }
 public BorrowerInfoModel(){
     
-}
-    public BorrowerInfoModel(String BorrowerId, String BorrowerName, String LenderName, List<ItemsInfoModel> cartList,Date DateRequest, String AllItemsID) {
-         this.BorrowerId = BorrowerId;
-           this.BorrowerName = BorrowerName;
-            this.LenderName = LenderName;
-           this.cartList = cartList;
-             this.DateRequest = DateRequest;
-             this.AllItemsID = AllItemsID;
-             
+}   
+
+    public BorrowerInfoModel(String borrowerId, String borrowerName, String lenderName, Date dateRequest, Date dateRelease, String status, String returnStatus, String remarks, String allItemsID,  List<ItemsInfoModel> cartList) {
+        this.BorrowerId = borrowerId;
+        this.BorrowerName = borrowerName;
+        this.LenderName = lenderName;
+        this.DateRequest = dateRequest;
+        this.daterelease = dateRelease;
+        this.status = status;
+        this.ReturnStatus = returnStatus;
+        this.Remarks = remarks;
+        this.AllItemsID = allItemsID;
+        this.cartList = cartList;
     }
 
+    
+
+    
+
+    
+
    
-   private String BorrowerId;
-  private String BorrowerName;
+    private String BorrowerId;
+    private String BorrowerName;
     private String LenderName;
     private Date DateRequest;
+    private Date daterelease;
+    private String status;
     private String AllItemsID;
     private Date DateReturn;
-
-      private List<ItemsInfoModel>cartList;
+    private String ReturnStatus;
+    private String Remarks;
+    private List<ItemsInfoModel>cartList;
       
 
 }

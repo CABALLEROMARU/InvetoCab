@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import inventocab.Forms.PopItemForm;
-import inventocab.Items.ItemLogsPop;
 import inventocab.JDBC.DatabaseConnection;
 import inventocab.Models.BorrowerInfoModel;
 import inventocab.Models.ItemsInfoModel;
@@ -31,6 +30,9 @@ public class BorrowerController {
         this.popItemFormInstance = popItemForm;
         this.itemform = itemform;
        
+    }
+    public BorrowerController () {
+        
     }
   public List<BorrowerInfoModel> getBorrowedItems() throws SQLException {
     List<BorrowerInfoModel> list = new ArrayList<>();
@@ -92,7 +94,7 @@ public class BorrowerController {
 public List<BorrowerInfoModel> getBorrower() throws SQLException {
     List<BorrowerInfoModel> list = new ArrayList<>();
     String sql = """
-        SELECT DISTINCT borrower_Id, borrowerName, lendererName, borrowDate ,returnedDate
+        SELECT DISTINCT borrower_Id, borrowerName, lendererName, borrowDate ,returnedDate,releasedate,status,returnStatus , remarks
         FROM borrowerdata
     """;
 
@@ -134,7 +136,13 @@ public List<BorrowerInfoModel> getBorrower() throws SQLException {
             borrower.setLenderName(rs.getString("lendererName"));
             borrower.setDateRequest(rs.getDate("borrowDate")); 
             borrower.setDateReturn(rs.getDate("returnedDate"));
+             borrower.setDateRelease(rs.getDate("releasedate")); // Set the dateRelease
+            borrower.setStatus(rs.getString("status")); 
+            borrower.setReturnStatus(rs.getString("returnStatus"));
+               borrower.setRemarks(rs.getString("remarks"));
+            
             borrower.setCartList(cart);
+           
 
             list.add(borrower);
         }
@@ -176,40 +184,55 @@ public int countBorrowerId(String borrowerId) throws SQLException {
 public void addBorrow(List<BorrowerInfoModel> borrowedData) {
     Connection conn = null;
     try {
-      
         conn = getConnection();
         if (conn == null) {
             System.out.println("Database connection failed.");
             return;
         }
         
-       
         conn.setAutoCommit(false);
         
-        
-        String sql = "INSERT INTO borrowerdata (borrower_Id, borrowerName, lendererName, borrowDate, allItemsID, itemId, itemName, quantity,category) VALUES (?, ?, ?, ?, ?, ?, ?,?,?)";
+        String sql = "INSERT INTO borrowerdata (borrower_Id, borrowerName, lendererName, borrowDate, releasedate, status, allItemsID, itemId, itemName, quantity, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         ps = conn.prepareStatement(sql);
         
         List<ItemsInfoModel> updatedItems = new ArrayList<>(); 
         
         for (BorrowerInfoModel itemLoan : borrowedData) {
-            
+            // Debugging output
+            System.out.println("Borrower ID: " + itemLoan.getBorrowerId());
+            System.out.println("Borrower Name: " + itemLoan.getBorrowerName());
+            System.out.println("Lender Name: " + itemLoan.getLenderName());
+            System.out.println("Date Request: " + itemLoan.getDateRequest());
+            System.out.println("Date Release: " + itemLoan.getDateRelease());
+            System.out.println("Status: " + itemLoan.getStatus());
+            System.out.println("All Items ID: " + itemLoan.getAllItemsID());
+
+            // Check for null values before setting them
+            if (itemLoan.getBorrowerId() == null) {
+                throw new SQLException("Borrower ID cannot be null");
+            }
+            if (itemLoan.getBorrowerName() == null) {
+                throw new SQLException("Borrower Name cannot be null");
+            }
+            if (itemLoan.getLenderName() == null) {
+                throw new SQLException("Lender Name cannot be null");
+            }
+
             ps.setString(1, itemLoan.getBorrowerId());
             ps.setString(2, itemLoan.getBorrowerName());
             ps.setString(3, itemLoan.getLenderName());
-            ps.setDate(4, new java.sql.Date(itemLoan.getDateRequest().getTime()));
-            ps.setString(5, itemLoan.getAllItemsID());
+            ps.setDate(4, itemLoan.getDateRequest() != null ? new java.sql.Date(itemLoan.getDateRequest().getTime()) : null);
+            ps.setDate(5, itemLoan.getDateRelease() != null ? new java.sql.Date(itemLoan.getDateRelease().getTime()) : null);
+            ps.setString(6, itemLoan.getStatus());
+            ps.setString(7, itemLoan.getAllItemsID());
             
             for (ItemsInfoModel itemData : itemLoan.getCartList()) {
-                
-                ps.setString(6, itemData.getItemID());
-                ps.setString(7, itemData.getItemName());
-                ps.setInt(8, itemData.getCartQuantity());
-                ps.setString(9,itemData.getCategory());
-                
+                ps.setString(8, itemData.getItemID());
+                ps.setString(9, itemData.getItemName());
+                ps.setInt(10, itemData.getCartQuantity());
+                ps.setString(11, itemData.getCategory());
                 
                 ps.addBatch();
-                
                 
                 int newQuantity = itemData.getQuantity() - itemData.getCartQuantity(); 
                 updateItemQuantity(conn, itemData.getItemID(), newQuantity); 
@@ -219,7 +242,6 @@ public void addBorrow(List<BorrowerInfoModel> borrowedData) {
             }
         }
         
-       
         int[] result = ps.executeBatch();
         conn.commit(); 
         System.out.println("Inserted " + result.length + " records successfully.");
@@ -237,7 +259,6 @@ public void addBorrow(List<BorrowerInfoModel> borrowedData) {
         }
         e.printStackTrace();
     } finally {
-       
         try {
             if (ps != null) ps.close();
             if (conn != null) conn.close(); 
@@ -246,9 +267,6 @@ public void addBorrow(List<BorrowerInfoModel> borrowedData) {
         }
     }
 }
-
-
-
 public List<BorrowerInfoModel> searchBorrowedItems(String search) throws SQLException {
     List<BorrowerInfoModel> borrowedItemsList = new ArrayList<>();
     PreparedStatement ps = null;

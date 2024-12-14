@@ -5,17 +5,12 @@
 package inventocab.Forms;
 
 import inventocab.Controller.BorrowerController;
-import inventocab.Controller.ItemController;
 import inventocab.Controller.ReturnController;
 import inventocab.Event.EventItem;
 
 import inventocab.Items.ItemLogsPop;
-import inventocab.Items.ItemPack;
-import inventocab.Items.ItemRecPopulate;
 
 import inventocab.Models.BorrowerInfoModel;
-import inventocab.Models.ItemsInfoModel;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.logging.Level; 
@@ -27,11 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.SwingUtilities;
-import raven.modal.ModalDialog;
-import raven.modal.Toast;
-import raven.modal.component.SimpleModalBorder;
-import raven.modal.option.Location;
-import raven.modal.option.Option;
 
 
 public  class BorrowLogs extends javax.swing.JPanel {
@@ -43,18 +33,13 @@ public  class BorrowLogs extends javax.swing.JPanel {
      private EventItem event;
      
    
- 
-    
-   
-   
     public BorrowLogs()throws SQLException, Exception {
         initComponents();
          this.popItemForm = new PopItemForm();
         this.itemform = new Item_Form();
         this.form3 = new Form_3();
          this.seenBorrowerIds = new HashSet<>(); 
-        populateAddDataLogs(this.popItemForm, this.itemform);
-       
+        populateAddDataLogs(this.popItemForm, this.itemform);   
    
     }
     
@@ -65,18 +50,19 @@ public  class BorrowLogs extends javax.swing.JPanel {
     public void setEvent(EventItem event) {
         this.event = event;
     }
+    public void addborrowedData(BorrowerInfoModel data) throws Exception {
+    ItemLogsPop item = new ItemLogsPop();
     
-    public void addborrowedData(BorrowerInfoModel data) throws Exception{
-        ItemLogsPop item = new ItemLogsPop();
-        
-       
-        item.setData(data);
-        item.returnbutton().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                ReturnController controler = new ReturnController();
-              controler.returnBorrow( data);
-               
+    item.setData(data);
+    item.returnbutton().addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            ReturnController controller = new ReturnController();
+            // Get the return data from the item logs pop
+            BorrowerInfoModel returnData = item.getReturnData(); // Assuming you have this method in ItemLogsPop
+            
+            if (returnData != null) {
+                controller.returnBorrow(returnData);
                 try {
                     populateAddDataLogs(popItemForm, itemform);
                 } catch (Exception ex) {
@@ -90,44 +76,88 @@ public  class BorrowLogs extends javax.swing.JPanel {
                 }
                 System.out.println("click");
             }
-        
-        
-        });
-        item.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    try {
-                        Form_3 form = new Form_3();
-                        form.populateAddDataRec(popItemForm, itemform);
-                        
-                      
-                        
-                    } catch (Exception ex) {
-                        Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+        }
+    });
+    
+    item.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                try {
+                    Form_3 form = new Form_3();
+                    form.populateAddDataRec(popItemForm, itemform);
+                } catch (Exception ex) {
+                    Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
-                
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                super.mouseEntered(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                super.mouseExited(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
-            }
-        
-        
-        });
-        responsiveItem5.add(item);
-        repaint();
-        revalidate();
-        
-    }
+            }             
+        }
+    });
+    
+    responsiveItem5.add(item);
+    repaint();
+    revalidate();
+}
+//    public void addborrowedData(BorrowerInfoModel data) throws Exception{
+//        ItemLogsPop item = new ItemLogsPop();
+//        
+//       
+//        item.setData(data);
+//        item.returnbutton().addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                ReturnController controler = new ReturnController();
+//              controler.returnBorrow( data);
+//               
+//                try {
+//                    populateAddDataLogs(popItemForm, itemform);
+//                } catch (Exception ex) {
+//                    Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                try {
+//                    Form_3 form = new Form_3();
+//                    form.populateAddDataRec(popItemForm, itemform);
+//                } catch (Exception ex) {
+//                    Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                System.out.println("click");
+//            }
+//        
+//        
+//        });
+//        item.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                if (SwingUtilities.isLeftMouseButton(e)) {
+//                    try {
+//                        Form_3 form = new Form_3();
+//                        form.populateAddDataRec(popItemForm, itemform);
+//                        
+//                      
+//                        
+//                    } catch (Exception ex) {
+//                        Logger.getLogger(BorrowLogs.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                }             
+//                
+//            }
+//
+//            @Override
+//            public void mouseEntered(MouseEvent e) {
+//                super.mouseEntered(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+//            }
+//
+//            @Override
+//            public void mouseExited(MouseEvent e) {
+//                super.mouseExited(e); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+//            }
+//        
+//        
+//        });
+//        responsiveItem5.add(item);
+//        repaint();
+//        revalidate();
+//        
+//    }
    
 
   public void PopulateBorrowData(BorrowerInfoModel data) throws SQLException, Exception {
@@ -258,7 +288,6 @@ private void SearchEvent(String search,PopItemForm popItemForm,Item_Form itemfor
         PopulateBorrowData(item); 
     }
 
-    
     responsiveItem5.revalidate(); 
     responsiveItem5.repaint(); 
 }

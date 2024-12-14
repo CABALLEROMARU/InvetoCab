@@ -129,6 +129,15 @@ public class ItemsInfoModel {
         this.dateReceive = dateReceive;
     }
 
+    public ItemsInfoModel(String itemID, String itemName, String category,  int quantity) {
+        this.itemID = itemID;
+        this.itemName = itemName;
+        this.category = category;
+       
+        this.quantity = quantity;
+       
+    }
+
   
     
 

@@ -1,28 +1,18 @@
 
 package inventocab.Forms;
 
-import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.formdev.flatlaf.util.UIScale;
 import inventocab.Models.ItemsInfoModel;
 import inventocab.Models.others.ItemImageModel;
-import java.awt.Rectangle;
-import java.awt.Shape;
 import java.io.File;
-
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Random;
-import javaswingdev.picturebox.DefaultPictureBoxRender;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import jnafilechooser.api.JnaFileChooser;
 import raven.datetime.component.date.DatePicker;
 
-
-
 public class addItemspop extends javax.swing.JPanel {
-
-    
 
 public ItemsInfoModel getData() {
     try {

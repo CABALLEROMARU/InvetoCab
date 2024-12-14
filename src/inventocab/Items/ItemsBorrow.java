@@ -1,24 +1,12 @@
 
 package inventocab.Items;
 
-import com.formdev.flatlaf.ui.FlatListCellBorder.Selected;
-import inventocab.Event.EventItem;
 import inventocab.Forms.PopItemForm;
-
 import inventocab.Models.ItemsInfoModel;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import raven.modal.ModalDialog;
-import raven.modal.component.SimpleModalBorder;
-import raven.modal.demo.layout.ResponsiveLayout;
 
 
 public class ItemsBorrow extends javax.swing.JPanel {
@@ -138,7 +126,8 @@ private void increaseQuantity() {
         quantityField.setText(String.valueOf(data.getQuantity())); 
         return;
     }
-    updateQuantityFields(currentQuantity); 
+    updateQuantityFields(currentQuantity);
+    
 }
 
 

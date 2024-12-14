@@ -6,35 +6,26 @@ package inventocab.Controller;
 
 
 
-
+import java.util.Base64;
 import com.mysql.cj.jdbc.Blob;
 import inventocab.JDBC.DatabaseConnection;
-import inventocab.Model.Model_Menu;
 import inventocab.Models.ItemsInfoModel;
 import inventocab.Models.others.ItemImageModel;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import static java.nio.file.Files.list;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.util.ArrayList;
-import static java.util.Collections.list;
 import java.util.List;
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import net.coobird.thumbnailator.Thumbnails;
-
-
-
 
 public class ItemController {
 private PreparedStatement ps;
@@ -60,20 +51,19 @@ public List<ItemsInfoModel> getAll()throws SQLException {
             item.setDateReceive(rs.getDate("DateReceive"));
             item.setDateRequest(rs.getDate("DateRequested"));
             
-             Blob blob = (Blob)rs.getBlob("ItemImage");
-              ImageIcon icon = null;
-            if (blob != null) {
-                byte[] imageBytes = blob.getBytes(1, (int) blob.length());
+            String base64Image = rs.getString("ItemImage");
+            ImageIcon icon = null;
+            if (base64Image != null) {
+                byte[] imageBytes = Base64.getDecoder().decode(base64Image);
                 icon = new ImageIcon(imageBytes);
-            }else{
+            } else {
                 icon = new ImageIcon(getClass().getResource("/inventocab/Icons/defaultImage.png"));
             }
             ItemImageModel imageModel = new ItemImageModel();
             imageModel.setIcon(icon);
             item.setImage(imageModel);
-            
+
             item.setDescription(rs.getString("Description"));
-            
            
             list.add(item);
         }
@@ -128,48 +118,27 @@ public List<ItemsInfoModel> getAll()throws SQLException {
         if (data.getItemLocation() == null || data.getItemLocation().isEmpty()) {
             System.out.println("ItemLocation is null or empty, setting a default value.");
             data.setItemLocation("Default Location");
-        }
-
-       
+        }     
         String sql = "INSERT INTO additem (Item_ID, ItemName, Category, ItemLocation, Quantity, ItemImage, Description, DateRequested, DateReceive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        
-        ps = prepareStatement(sql);
-
-        
+ 
+        ps = prepareStatement(sql); 
         ps.setString(1, data.getItemID());
         ps.setString(2, data.getItemName());
         ps.setString(3, data.getCategory());
         ps.setString(4, data.getItemLocation());
         ps.setInt(5, data.getQuantity());
 
-         byte[] imageBytes = null; 
         if (data.getImage() != null) {
-           
             File imageFile = data.getImage().getFile();
-            
             if (imageFile != null && imageFile.exists()) {
-                ps.setBytes(6, getByteImage(imageFile));
+                String base64Image = getBase64Image(imageFile);
+                ps.setString(6, base64Image); // Store Base64 string in the database
             } else {
-                ps.setBytes(6, null);
+                ps.setString(6, null);
                 System.out.println("Image file does not exist: " + imageFile.getAbsolutePath());
             }
-            
-            if (imageBytes == null) {
-            try {
-                InputStream defaultImageStream = getClass().getResourceAsStream("/inventocab/Icons/defaultImage.png");
-                if (defaultImageStream != null) {
-                    imageBytes = defaultImageStream.readAllBytes();
-                } else {
-                    System.out.println("Default image not found in resources.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         } else {
-             
-            ps.setBytes(6, null);
+            ps.setString(6, null);
         }
 
      
@@ -198,28 +167,24 @@ public List<ItemsInfoModel> getAll()throws SQLException {
         ps.setInt(4, data.getQuantity());
         
        
-        if (data.getImage() != null) {
+         if (data.getImage() != null) {
             File imageFile = data.getImage().getFile();
             if (imageFile != null && imageFile.exists()) {
-                ps.setBytes(5, getByteImage(imageFile)); 
+                String base64Image = getBase64Image(imageFile);
+                ps.setString(5, base64Image); // Store Base64 string in the database
             } else {
-                
                 System.out.println("Image file does not exist: " + (imageFile != null ? imageFile.getAbsolutePath() : "null"));
-                ps.setBytes(5, null);
+                ps.setString(5, null);
             }
         } else {
-           
+            // Handle existing image logic
             String existingImageSql = "SELECT ItemImage FROM additem WHERE Item_ID=?";
             PreparedStatement existingImagePs = prepareStatement(existingImageSql);
             existingImagePs.setString(1, data.getItemID());
             ResultSet rs = existingImagePs.executeQuery();
             if (rs.next()) {
-                Blob existingBlob = (Blob) rs.getBlob("ItemImage");
-                if (existingBlob != null) {
-                    ps.setBytes(5, existingBlob.getBytes(1, (int) existingBlob.length()));
-                } else {
-                    ps.setBytes(5, null);
-                }
+                String existingBase64Image = rs.getString("ItemImage");
+                ps.setString(5, existingBase64Image);   
             }
             rs.close();
             existingImagePs.close();
@@ -298,8 +263,7 @@ public List<ItemsInfoModel> getAll()throws SQLException {
     try {
         
         String sql = "SELECT Item_ID, ItemName, Category, ItemLocation, Quantity, Description, DateRequested, DateReceive, ItemImage FROM additem WHERE (ItemName LIKE ? OR Category LIKE ? OR ItemLocation LIKE ?) AND DateDeleted IS NULL";
-        
-       
+          
         ps = getConnection().prepareStatement(sql);
         String searchPattern = "%" + search + "%";
         ps.setString(1, searchPattern);  
@@ -308,8 +272,7 @@ public List<ItemsInfoModel> getAll()throws SQLException {
 
        
         rs = ps.executeQuery();
-        
-      
+           
         while (rs.next()) {
             
             ItemsInfoModel item = new ItemsInfoModel();
@@ -322,21 +285,18 @@ public List<ItemsInfoModel> getAll()throws SQLException {
             item.setDateRequest(rs.getDate("DateRequested"));
             item.setDateReceive(rs.getDate("DateReceive"));
 
-           Blob blob = (Blob)rs.getBlob("ItemImage");
-              ImageIcon icon = null;
-            if (blob != null) {
-                byte[] imageBytes = blob.getBytes(1, (int) blob.length());
+            String base64Image = rs.getString("ItemImage");
+            ImageIcon icon = null;
+            if (base64Image != null) {
+                byte[] imageBytes = Base64.getDecoder().decode(base64Image);
                 icon = new ImageIcon(imageBytes);
-            }else{
+            } else {
                 icon = new ImageIcon(getClass().getResource("/inventocab/Icons/defaultImage.png"));
             }
             ItemImageModel imageModel = new ItemImageModel();
             imageModel.setIcon(icon);
             item.setImage(imageModel);
-            
-            item.setDescription(rs.getString("Description"));
-            
-           
+
             itemsList.add(item);
         }
         return itemsList;
@@ -366,6 +326,36 @@ public List<ItemsInfoModel> getAll()throws SQLException {
         }
         return null;
     }
+    private String getBase64Image(File file) throws IOException {
+    String fileName = file.getName();
+    String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+
+    BufferedImage image = Thumbnails.of(file)
+            .width(1000)
+            .outputQuality(0.7f)
+            .asBufferedImage();
+
+    ByteArrayOutputStream out = null;
+    try {
+        out = new ByteArrayOutputStream();
+        
+        if ("png".equals(fileExtension)) {
+            ImageIO.write(image, "png", out);
+        } else {
+            ImageIO.write(image, "jpg", out);
+        }
+        
+        byte[] data = out.toByteArray();
+        System.out.println("Image byte array length: " + data.length);
+        
+        // Convert byte array to Base64 string
+        return Base64.getEncoder().encodeToString(data);
+    } finally {
+        if (out != null) {
+            out.close();
+        }
+    }
+}
   private byte[] getByteImage(File file) throws IOException {
    
     String fileName = file.getName();

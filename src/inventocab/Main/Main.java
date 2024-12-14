@@ -3,27 +3,18 @@ package inventocab.Main;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
-import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import inventocab.Components.Menu;
 import inventocab.Event.Event;
 import inventocab.Forms.BorrowLogs;
-
 import inventocab.Forms.Form_3;
 import inventocab.Forms.Item_Form;
 import inventocab.Forms.PopItemForm;
-import static inventocab.Main.Main.main;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
-import static java.awt.SystemColor.menu;
-import java.awt.Toolkit;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 public class Main extends javax.swing.JFrame {

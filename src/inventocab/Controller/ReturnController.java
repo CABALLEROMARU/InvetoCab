@@ -14,8 +14,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -54,9 +52,12 @@ public class ReturnController {
 
         conn.setAutoCommit(false); 
 
-        String sql = "UPDATE borrowerdata SET returnedDate = current_date() WHERE borrower_Id = ?";
+        String sql = "UPDATE borrowerdata SET returnedDate = current_date(), returnStatus = ?, remarks = ? WHERE borrower_Id = ?";
         ps = conn.prepareStatement(sql);
-        ps.setString(1, data.getBorrowerId());
+        
+         ps.setString(1, data.getReturnStatus());
+        ps.setString(2, data.getRemarks());
+        ps.setString(3, data.getBorrowerId());
         ps.executeUpdate();
         updateBorrowedQuantity(data);
         conn.commit(); 
@@ -105,7 +106,7 @@ public class ReturnController {
 
         List<ItemsInfoModel> cartList = data.getCartList();
         for (ItemsInfoModel item : cartList) {
-            System.out.println("Updating Item ID: " + item.getItemID() + " with Quantity: " + item.getCartQuantity());
+            
             ps.setInt(1, item.getQuantity());
             ps.setString(2, item.getItemID());
             ps.addBatch();
@@ -113,7 +114,7 @@ public class ReturnController {
         
         int[] results = ps.executeBatch();
         conn.commit(); 
-        System.out.println("Batch update completed. Rows affected: " + Arrays.toString(results));
+      
 
     } catch (Exception e) {
         e.printStackTrace();
@@ -159,9 +160,9 @@ public class ReturnController {
        
         int rowsUpdated = ps.executeUpdate();
         if (rowsUpdated > 0) {
-            System.out.println("Return date updated successfully for borrower ID: " + borrowerId);
+            
         } else {
-            System.out.println("No borrower found with ID: " + borrowerId);
+         
         }
     } catch (SQLException e) {
         e.printStackTrace();

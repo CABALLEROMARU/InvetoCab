@@ -5,8 +5,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 public class DatabaseConnection {
+ private static DatabaseConnection instance;
+    private Connection connection;
 
+    public static DatabaseConnection getInstance() {
+        if (instance == null) {
+            instance = new DatabaseConnection();
+        }
+        return instance;
+    }
     public DatabaseConnection() {
+        
+        
     }
      public Connection getConnection() throws SQLException{
         try {

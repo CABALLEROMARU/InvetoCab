@@ -1,25 +1,15 @@
 
 package inventocab.Components;
 
-import inventocab.Forms.Item_Form;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class Header extends javax.swing.JPanel {
-
-     
-    public Header()   {
+  public Header()   {
         initComponents();
-        setOpaque(false);
-     
-                
-       
+        setOpaque(false);                      
     }
   
     

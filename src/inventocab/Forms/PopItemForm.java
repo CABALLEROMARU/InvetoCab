@@ -9,29 +9,25 @@ import inventocab.Controller.BorrowerController;
 import inventocab.Controller.ItemController;
 import inventocab.Event.EventItem;
 import inventocab.Items.ItemLogsPop;
-import inventocab.Items.ItemPack;
 import inventocab.Items.ItemPackInventory;
 import inventocab.Items.ItemsBorrow;
 import inventocab.Models.BorrowerInfoModel;
 import inventocab.Models.ItemsInfoModel;
-import inventocab.Models.others.ItemImageModel;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import raven.datetime.component.date.DatePicker;
@@ -64,41 +60,60 @@ public class PopItemForm extends javax.swing.JPanel {
     this.borrowInstance = borrowInstance;
      this.itemForm = itemForm;
 }
+    
+    
+   
+
 public BorrowerInfoModel getData() {
     try {
-        Date dateRequestedData = dateRequested.isDateSelected() ? Date.valueOf(dateRequested.getSelectedDate()) : null;
+        LocalDate requestedDate = dateRequested.isDateSelected() ? dateRequested.getSelectedDate() : null;
+        LocalDate releaseDate = dateReleased.isDateSelected() ? dateReleased.getSelectedDate() : null;
 
-        
+        Date dateRequestedData = requestedDate != null ? Date.valueOf(requestedDate) : null;
+        Date dateReleaseData = releaseDate != null ? Date.valueOf(releaseDate) : null;
+
         String borrowerId = BorId.getText();
         String borrowerNameText = borrowerName.getText();
         String lenderNameText = lenderername.getText();
+        String statusText = (String) status.getSelectedItem();
+        String returnStatusText =null;
+        String remarks = null;
         String allItemsID = allitemsID.getText();
+        
+        BorrowerInfoModel borrowerInfo = new BorrowerInfoModel(
+        borrowerId,
+        borrowerNameText,
+        lenderNameText,
+        dateRequestedData,
+        dateReleaseData,
+        statusText,
+        returnStatusText,
+                remarks,
+        allItemsID,
+        cartList
+    );
 
-        System.out.println("Borrower ID: " + borrowerId);
-        System.out.println("Borrower Name: " + borrowerNameText);
-        System.out.println("Lender Name: " + lenderNameText); 
-
+        // Debugging output
        
+
         if (borrowerId.isEmpty() || borrowerNameText.isEmpty() || lenderNameText.isEmpty()) {
             JOptionPane.showMessageDialog(null, "All fields must be filled out.", "Error", JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-       
         if (cartList == null || cartList.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Cart list cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
             return null; 
         }
 
-        
-        return new BorrowerInfoModel(borrowerId, borrowerNameText, lenderNameText, cartList, dateRequestedData,allItemsID);
+        // Create a new BorrowerInfoModel
+        return new BorrowerInfoModel(borrowerId, borrowerNameText, lenderNameText, dateRequestedData, dateReleaseData, statusText,returnStatusText,remarks, allItemsID, cartList);
     } catch (Exception e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(null, "An error occurred while retrieving data.", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "An error occurred while retrieving data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         return null;
     }
 }
-
 
     public void setEvent(EventItem event) {
         this.event = event;
@@ -114,6 +129,8 @@ public BorrowerInfoModel getData() {
      private ItemController items = new ItemController();
     
        private DatePicker dateRequested = new DatePicker();
+       private DatePicker dateReleased = new DatePicker();
+       
     public PopItemForm() throws SQLException {
         initComponents();
         init();
@@ -133,9 +150,31 @@ public BorrowerInfoModel getData() {
    
     dateRequested.setDateFormat("yyyy-MM-dd");
     dateRequested.now();
-    
+   
+ datePicker2.setCloseAfterSelected(true);
+    datePicker2.setEditor(daterel);
 
+    dateReleased.setEditor(daterel);
+    dateReleased.setCloseAfterSelected(true);
+    dateReleased.setDateFormat("yyyy-MM-dd");
+
+    LocalDate nextEligibleDate = calculateNextEligibleDate(2);
+    dateReleased.setSelectedDate(nextEligibleDate);
     }
+    
+     private LocalDate calculateNextEligibleDate(int daysToAdd) {
+    LocalDate date = LocalDate.now();
+    int addedDays = 0;
+
+    while (addedDays < daysToAdd) {
+        date = date.plusDays(1);
+      
+        if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+            addedDays++;
+        }
+    }
+    return date;
+     }
    private static String generateRandomID(String candidateChar,int length){
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -373,6 +412,18 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
     revalidate();
     repaint();
 }
+    
+    private ItemsBorrow findItemsBorrowByItemId(String itemId) {
+    for (Component comp : resposiveItem2.getComponents()) {
+        if (comp instanceof ItemsBorrow) {
+            ItemsBorrow itemsBorrow = (ItemsBorrow) comp;
+            if (itemsBorrow.getData().getItemID().equals(itemId)) {
+                return itemsBorrow;
+            }
+        }
+    }
+    return null; // Not found
+}
 
    
     @SuppressWarnings("unchecked")
@@ -380,6 +431,7 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
     private void initComponents() {
 
         datePicker1 = new raven.datetime.component.date.DatePicker();
+        datePicker2 = new raven.datetime.component.date.DatePicker();
         panel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -399,8 +451,16 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
         dateBor = new javax.swing.JFormattedTextField();
         jLabel8 = new javax.swing.JLabel();
         allitemsID = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        daterel = new javax.swing.JFormattedTextField();
+        jLabel7 = new javax.swing.JLabel();
+        status = new javax.swing.JComboBox<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         resposiveItem2 = new inventocab.Swing.ResposiveItem();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         search = new inventocab.Swing.SearchText();
@@ -443,28 +503,22 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
 
         jLabel4.setText("Borrower's Name:");
 
-        jLabel5.setText("Lenderer's Name:");
+        jLabel5.setText("Costudian's Name:");
 
-        jLabel8.setText("Date Borrow:");
+        jLabel8.setText("Date File:");
 
         allitemsID.setText("jLabel3");
+
+        jLabel3.setText("Date Release:");
+
+        jLabel7.setText("Item Status:");
+
+        status.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel8))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lenderername, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
-                    .addComponent(borrowerName, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
-                    .addComponent(dateBor))
-                .addContainerGap(16, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(BorId, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -472,6 +526,22 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(allitemsID, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel7))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lenderername, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+                    .addComponent(dateBor)
+                    .addComponent(daterel)
+                    .addComponent(status, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(borrowerName))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -488,7 +558,15 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dateBor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(daterel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addComponent(BorId, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(allitemsID, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -496,20 +574,42 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
 
         jScrollPane2.setViewportView(resposiveItem2);
 
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel9.setText("1 - Good");
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel10.setText("2 - Replacement");
+
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel11.setText("3 - Unavailable");
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel12.setText("4 - Loss");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(panelGradient1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(114, 114, 114)
-                        .addComponent(cancel, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                        .addComponent(cancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(borrowBut, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)))
+                        .addComponent(borrowBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel12)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -518,6 +618,12 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
                 .addComponent(panelGradient1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -617,80 +723,79 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
     }//GEN-LAST:event_searchKeyReleased
  private List<BorrowerInfoModel> borrowedData = new ArrayList<>();
     private void borrowButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrowButActionPerformed
- BorrowerController control = new BorrowerController(this,itemForm);
-    Item_Form itemform = null;
+  BorrowerController control = new BorrowerController(this, itemForm);
+      Item_Form itemform = null;
       try {
           itemform = new Item_Form();
       } catch (SQLException ex) {
           Logger.getLogger(PopItemForm.class.getName()).log(Level.SEVERE, null, ex);
       }
- 
- 
-try {
-    
-    BorrowerInfoModel borrowerInfo = getData(); 
+    for (ItemsInfoModel item : cartList) {
+        ItemsBorrow itemsBorrow = findItemsBorrowByItemId(item.getItemID());
+        if (itemsBorrow != null) {
+            int quantityInField = Integer.parseInt(itemsBorrow.getJTextField10().getText().trim());
+            if (quantityInField <= 0) {
+                JOptionPane.showMessageDialog(null, "Unable to borrow. Quantity must be greater than 0.", "Error", JOptionPane.ERROR_MESSAGE);
+                return; 
+            }
+        }
+    }     
 
-   
+    BorrowerInfoModel borrowerInfo = getData(); // Ensure this is called
+
     if (borrowerInfo != null && !borrowerInfo.getCartList().isEmpty()) {
-     
         List<BorrowerInfoModel> borrowerList = new ArrayList<>();
         for (ItemsInfoModel item : borrowerInfo.getCartList()) {
-          
+            Date dateRelease = borrowerInfo.getDateRelease() != null ? new Date(borrowerInfo.getDateRelease().getTime()) : null;
+            Date dateRequest = borrowerInfo.getDateRequest() != null ? new Date(borrowerInfo.getDateRequest().getTime()) : null;
+
+            // Create a new BorrowerInfoModel instance
             BorrowerInfoModel newBorrower = new BorrowerInfoModel(
                 borrowerInfo.getBorrowerId(),
                 borrowerInfo.getBorrowerName(),
                 borrowerInfo.getLenderName(),
-                List.of(item), 
-                borrowerInfo.getDateRequest(),
-                    borrowerInfo.getAllItemsID()
-                    
+                dateRequest, // Ensure this is a Date
+                dateRelease,  // Ensure this is a Date
+                borrowerInfo.getStatus(),
+                borrowerInfo.getReturnStatus(),
+                borrowerInfo.getRemarks(),
+                borrowerInfo.getAllItemsID(),
+                List.of(item) // Ensure this is a List<ItemsInfoModel>
             );
             borrowerList.add(newBorrower);
-            
         }
            
-       control.addBorrow(borrowerList);
-       
-      BorrowLogs borrowLogs = new BorrowLogs();
-            borrowLogs.populateAddDataLogs(this, itemform);
-            ItemLogsPop itemLogsPop = new ItemLogsPop();
-           
+        // Call the addBorrow method to insert the data into the database
+        control.addBorrow(borrowerList);
+      
         if (itemForm != null) {
-               
-                itemForm.refreshItemQuantities(borrowerInfo.getCartList());
-            }
-      
-        itemform.populateAddData();
-        populateData();
-        
+            itemForm.refreshItemQuantities(borrowerInfo.getCartList());
+        }
+        try {
+            itemform.populateAddData();
+        } catch (SQLException ex) {
+            Logger.getLogger(PopItemForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
        
-      
-      
-        JOptionPane.showMessageDialog(null, "Your borrowed items is processing " + "\n" + "Please Comeback after 3 days to receive the items", "Success", JOptionPane.INFORMATION_MESSAGE);
         
+        JOptionPane.showMessageDialog(null, "Your borrowed items are being processed. " + "\n" + "Please come back after 3 days to receive the items.", "Success", JOptionPane.INFORMATION_MESSAGE);
         
+      try {
+            populateData();
+        } catch (SQLException ex) {
+            Logger.getLogger(PopItemForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-         String Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        String newRandomID = generateRandomID(Alphabet, 6);
-        BorId.setText(newRandomID);
-        allitemsID.setText(newRandomID);
-        
-         borrowerName.setText(""); 
-        lenderername.setText("");   
-        
+        // Clear the cartList after successful borrowing
         cartList.clear();
-        
-            populateCart(); 
+         try {
+            populateCart(); // Refresh the cart display
+        } catch (SQLException ex) {
+            Logger.getLogger(PopItemForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
     } else {
-       
         JOptionPane.showMessageDialog(null, "Failed to add borrow data. Please check the input.", "Error", JOptionPane.ERROR_MESSAGE);
     }
-} catch (Exception e) {
-    e.printStackTrace();
-   
-    JOptionPane.showMessageDialog(null, "An error occurred while adding borrow data.", "Error", JOptionPane.ERROR_MESSAGE);
-}
-
     }//GEN-LAST:event_borrowButActionPerformed
 
     private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
@@ -918,12 +1023,20 @@ private void populateCart() throws SQLException{
     private javax.swing.JButton cancel;
     private javax.swing.JFormattedTextField dateBor;
     private raven.datetime.component.date.DatePicker datePicker1;
+    private raven.datetime.component.date.DatePicker datePicker2;
+    private javax.swing.JFormattedTextField daterel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -936,6 +1049,7 @@ private void populateCart() throws SQLException{
     private inventocab.Swing.ResposiveItem resposiveItem2;
     private inventocab.Swing.ResposiveItem2 resposiveItem21;
     private inventocab.Swing.SearchText search;
+    private javax.swing.JComboBox<String> status;
     // End of variables declaration//GEN-END:variables
 
    
