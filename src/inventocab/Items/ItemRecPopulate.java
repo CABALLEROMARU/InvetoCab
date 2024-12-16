@@ -334,12 +334,12 @@ public class ItemRecPopulate extends javax.swing.JPanel {
  public ParametersModel getBorrowerDetails(String borrowerId, String borrowerName) throws SQLException {
  
     String sql = """
-        SELECT borrower_Id, borrowerName, lendererName, borrowDate, returnedDate 
+        SELECT borrower_Id, borrowerName, lendererName, borrowDate, returnedDate , releasedate , status , returnStatus , remarks
         FROM borrowerdata
         WHERE borrower_Id = ? AND borrowerName = ?
     """;
     String itemSql = """
-        SELECT itemId, itemName, quantity, Category 
+        SELECT  itemName, quantity
         FROM borrowerdata
         WHERE borrower_Id = ?
     """;
@@ -368,23 +368,28 @@ public class ItemRecPopulate extends javax.swing.JPanel {
            
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String borrowDateString = dateFormat.format(rs.getDate("borrowDate"));
+             String dateReleaseStr = dateFormat.format(rs.getDate("releasedate"));
             String returnedDateString = rs.getDate("returnedDate") != null
                 ? dateFormat.format(rs.getDate("returnedDate"))
                 : null;
+            
 
             data.setDateRequest(borrowDateString);
             data.setDateReturn(returnedDateString);
+            data.setDaterelease(dateReleaseStr);
+            data.setStatus(rs.getString("status"));
+            data.setReturnStatus(rs.getString("returnStatus"));
+            data.setRemarks(rs.getString("remarks"));
+               
 
             
             try (PreparedStatement pd = conn.prepareStatement(itemSql)) {
                 pd.setString(1, borrowerId);
                 try (ResultSet itemRs = pd.executeQuery()) {
                     while (itemRs.next()) {
-                        BorrowerDetailsModel borrowerDetailsModel = new BorrowerDetailsModel();
-                        borrowerDetailsModel.setItemId(itemRs.getString("itemId"));
+                        BorrowerDetailsModel borrowerDetailsModel = new BorrowerDetailsModel();                    
                         borrowerDetailsModel.setItemName(itemRs.getString("itemName"));
                         borrowerDetailsModel.setQuantity(itemRs.getString("quantity"));
-                        borrowerDetailsModel.setCategory(itemRs.getString("Category"));
                         cart.add(borrowerDetailsModel);
                         
                     }

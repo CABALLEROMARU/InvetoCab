@@ -41,6 +41,10 @@ public void printReportInvoice(ParametersModel data) throws JRException {
     para.put("LenderName", data.getLenderName());
     para.put("DateRequest", data.getDateRequest());
     para.put("DateReturn", data.getDateReturn());
+    para.put("DateRelease", data.getDaterelease());
+    para.put("Status",data.getStatus());
+    para.put("ReturnStatus", data.getReturnStatus());
+    para.put("Remarks", data.getRemarks());
 
     
     JRBeanCollectionDataSource itemDataSource = new JRBeanCollectionDataSource(data.getField());

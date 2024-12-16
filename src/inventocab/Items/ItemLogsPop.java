@@ -69,11 +69,17 @@ public BorrowerInfoModel getReturnData() {
   
  public void setData(BorrowerInfoModel data) {
     this.data = data;
-
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+String dateBorStr = (data.getDateRequest()!= null) ? dateFormat.format(data.getDateRequest()) : "N/A";
+String dateRelStr = (data.getDateRelease()!= null) ? dateFormat.format(data.getDateRelease()) : "N/A";
+ 
     // Populate UI components with data
     borId.setText(data.getBorrowerId());
     borName.setText(data.getBorrowerName());
     lenName.setText(data.getLenderName());
+    dateBOR.setText( dateBorStr);
+    daterel.setText(dateRelStr);
+    status.setText(data.getStatus());
     // Populate other fields...
 
     // Populate the cartList

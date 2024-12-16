@@ -158,7 +158,7 @@ public BorrowerInfoModel getData() {
     dateReleased.setCloseAfterSelected(true);
     dateReleased.setDateFormat("yyyy-MM-dd");
 
-    LocalDate nextEligibleDate = calculateNextEligibleDate(2);
+    LocalDate nextEligibleDate = calculateNextEligibleDate(3);
     dateReleased.setSelectedDate(nextEligibleDate);
     }
     
@@ -457,10 +457,6 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
         status = new javax.swing.JComboBox<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         resposiveItem2 = new inventocab.Swing.ResposiveItem();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         search = new inventocab.Swing.SearchText();
@@ -513,7 +509,7 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
 
         jLabel7.setText("Item Status:");
 
-        status.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4" }));
+        status.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1 - New ", "2 - Good Condition", "3 - Slightly Damaged", "4 - Highly Damaged " }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -574,18 +570,6 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
 
         jScrollPane2.setViewportView(resposiveItem2);
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel9.setText("1 - Good");
-
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel10.setText("2 - Replacement");
-
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel11.setText("3 - Unavailable");
-
-        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel12.setText("4 - Loss");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -597,19 +581,9 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(114, 114, 114)
-                        .addComponent(cancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cancel, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(borrowBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel10)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel12)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(borrowBut, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -618,12 +592,6 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
                 .addComponent(panelGradient1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -723,7 +691,18 @@ public void addBorrow(ItemsInfoModel data) throws SQLException {
     }//GEN-LAST:event_searchKeyReleased
  private List<BorrowerInfoModel> borrowedData = new ArrayList<>();
     private void borrowButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrowButActionPerformed
-  BorrowerController control = new BorrowerController(this, itemForm);
+  // Get the current date
+//    LocalDate currentDate = LocalDate.now();
+//    
+//    // Check if the current day is Saturday or Sunday
+//    if (currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+//        JOptionPane.showMessageDialog(null, "Borrowing is not allowed on weekends (Saturday and Sunday).", "Error", JOptionPane.ERROR_MESSAGE);
+//        return; // Exit the method if it's a weekend
+//    }
+//        
+        
+        BorrowerController control = new BorrowerController(this, itemForm);
+  
       Item_Form itemform = null;
       try {
           itemform = new Item_Form();
@@ -1026,9 +1005,6 @@ private void populateCart() throws SQLException{
     private raven.datetime.component.date.DatePicker datePicker2;
     private javax.swing.JFormattedTextField daterel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1036,7 +1012,6 @@ private void populateCart() throws SQLException{
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
